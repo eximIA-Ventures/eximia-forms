@@ -20,6 +20,7 @@ import {
   BarChart3,
   Megaphone,
   Check,
+  ClipboardPaste,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -51,11 +52,12 @@ const LENGTH_OPTIONS = [
   { id: "long", label: "Longo", description: "16+ campos", fields: "16+" },
 ] as const;
 
+type CreationMode = "blank" | "ai" | "import";
 type AiStep = "category" | "details" | "generating";
 
 export default function NewFormPage() {
   // ── Shared state ──
-  const [mode, setMode] = useState<"blank" | "ai">("blank");
+  const [mode, setMode] = useState<CreationMode>("blank");
   const [creating, setCreating] = useState(false);
   const router = useRouter();
   const toast = useToast();
@@ -73,8 +75,11 @@ export default function NewFormPage() {
   const [audience, setAudience] = useState("");
   const [aiPrompt, setAiPrompt] = useState("");
 
-  // Reset AI state when switching modes
-  function handleModeChange(newMode: "blank" | "ai") {
+  // ── Import mode state ──
+  const [importText, setImportText] = useState("");
+
+  // Reset state when switching modes
+  function handleModeChange(newMode: CreationMode) {
     setMode(newMode);
     if (newMode === "ai") {
       setAiStep("category");
@@ -148,21 +153,63 @@ export default function NewFormPage() {
     setCreating(false);
   }
 
+  // ── Import questions ──
+  async function handleImport() {
+    if (!importText.trim()) return;
+    setCreating(true);
+
+    try {
+      const aiRes = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: importText,
+          mode: "import",
+        }),
+      });
+
+      if (aiRes.ok) {
+        const { schema } = await aiRes.json();
+        const res = await fetch("/api/v1/forms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: schema.title || "Formulário importado",
+            description: schema.description || "",
+            schema,
+          }),
+        });
+
+        if (res.ok) {
+          const form = await res.json();
+          router.push(`/admin/forms/${form.id}/edit`);
+          return;
+        }
+      }
+      toast.error("Erro ao importar perguntas");
+    } catch {
+      toast.error("Erro ao importar perguntas");
+    }
+    setCreating(false);
+  }
+
+  const subtitle: Record<CreationMode, string> = {
+    blank: "Comece do zero e monte campo por campo",
+    ai: "Descreva o que precisa e a IA cria para você",
+    import: "Cole suas perguntas prontas e a IA estrutura o formulário",
+  };
+
   // ── Render ──
   return (
     <div className="mx-auto max-w-2xl p-6 md:p-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Novo Formulário</h1>
-        <p className="mt-1 text-sm text-muted">
-          {mode === "ai"
-            ? "Descreva o que precisa e a IA cria para você"
-            : "Comece do zero e monte campo por campo"}
-        </p>
+        <p className="mt-1 text-sm text-muted">{subtitle[mode]}</p>
       </div>
 
       {/* Mode selector */}
-      <div className="mb-8 grid grid-cols-2 gap-3">
+      <div className="mb-8 grid grid-cols-3 gap-3">
         <button
           onClick={() => handleModeChange("blank")}
           className={cn(
@@ -195,6 +242,23 @@ export default function NewFormPage() {
           />
           <span className="text-sm font-medium">Criar com IA</span>
           <span className="text-xs text-muted">Descreva e gere</span>
+        </button>
+
+        <button
+          onClick={() => handleModeChange("import")}
+          className={cn(
+            "flex flex-col items-center gap-2 rounded-xl border p-5 transition-all",
+            mode === "import"
+              ? "border-accent bg-accent/5 shadow-sm shadow-accent/10"
+              : "border-border hover:border-accent/30"
+          )}
+        >
+          <ClipboardPaste
+            size={24}
+            className={mode === "import" ? "text-accent" : "text-muted"}
+          />
+          <span className="text-sm font-medium">Importar</span>
+          <span className="text-xs text-muted">Perguntas prontas</span>
         </button>
       </div>
 
@@ -231,6 +295,76 @@ export default function NewFormPage() {
             <Button onClick={handleCreateBlank} disabled={creating}>
               {creating ? "Criando..." : "Criar formulário"}
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ IMPORT MODE ═══ */}
+      {mode === "import" && !creating && (
+        <div className="space-y-4">
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold">
+              Cole suas perguntas
+            </label>
+            <Textarea
+              value={importText}
+              onChange={(e) => setImportText(e.target.value)}
+              placeholder={`Cole suas perguntas aqui, uma por linha. Exemplos:\n\n1. Qual seu nome completo?\n2. Qual seu email?\n3. Qual sua empresa?\n4. De 0 a 10, qual a probabilidade de nos recomendar?\n5. O que podemos melhorar?\n\nDica: Se a pergunta tiver opções, liste-as:\n6. Como nos conheceu?\n   a) Google\n   b) Indicação\n   c) Redes sociais`}
+              rows={12}
+            />
+            <p className="mt-1.5 text-[11px] text-muted">
+              A IA vai detectar automaticamente o tipo de cada campo (texto, email, NPS, múltipla escolha, etc.) e organizar em páginas se necessário.
+            </p>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => router.push("/admin/forms")}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleImport}
+              disabled={creating || !importText.trim()}
+              className="gap-1.5"
+            >
+              <ClipboardPaste size={14} />
+              Importar e criar formulário
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Import loading state */}
+      {mode === "import" && creating && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="relative mb-6">
+            <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center">
+              <ClipboardPaste size={28} className="text-accent animate-pulse" />
+            </div>
+            <Loader2
+              size={64}
+              className="absolute -inset-0 animate-spin text-accent/30"
+              strokeWidth={1}
+            />
+          </div>
+          <h2 className="text-lg font-semibold">Importando perguntas...</h2>
+          <p className="mt-2 max-w-xs text-sm text-muted">
+            A IA está analisando suas perguntas, detectando tipos de campo e organizando o formulário.
+          </p>
+          <div className="mt-6 flex gap-2">
+            {["Analisando perguntas", "Detectando tipos", "Estruturando"].map(
+              (step, i) => (
+                <span
+                  key={step}
+                  className="rounded-full bg-elevated px-3 py-1 text-[10px] text-muted animate-pulse"
+                  style={{ animationDelay: `${i * 0.3}s` }}
+                >
+                  {step}
+                </span>
+              )
+            )}
           </div>
         </div>
       )}
