@@ -795,25 +795,29 @@ function TextSummary({
 
 /* ─── Timeline Chart ─── */
 
+function toLocalDateKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 function TimelineChart({
   submissions,
 }: {
   submissions: FormSubmission[];
 }) {
-  // Group by day (last 14 days)
+  // Group by day (last 14 days) using local timezone
   const days = 14;
   const now = new Date();
+  const todayKey = toLocalDateKey(now);
   const dayMap: Record<string, number> = {};
 
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().split("T")[0];
-    dayMap[key] = 0;
+    dayMap[toLocalDateKey(d)] = 0;
   }
 
   for (const sub of submissions) {
-    const key = new Date(sub.created_at).toISOString().split("T")[0];
+    const key = toLocalDateKey(new Date(sub.created_at));
     if (key in dayMap) dayMap[key]++;
   }
 
@@ -839,8 +843,7 @@ function TimelineChart({
             day: "2-digit",
             month: "2-digit",
           });
-          const isToday =
-            date === now.toISOString().split("T")[0];
+          const isToday = date === todayKey;
 
           return (
             <div

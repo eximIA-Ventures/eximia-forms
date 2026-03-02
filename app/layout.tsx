@@ -5,6 +5,12 @@ import { ThemeScript } from "@/components/theme-script";
 export const metadata: Metadata = {
   title: "eximIA Forms",
   description: "O form builder AI-first que entende suas respostas",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({

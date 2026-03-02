@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from("forms")
-    .select("id, workspace_id, title, slug, description, status, published_at, created_at, updated_at")
+    .select("id, workspace_id, title, slug, description, schema, status, published_at, created_at, updated_at")
     .order("updated_at", { ascending: false });
 
   if (workspaceId) {

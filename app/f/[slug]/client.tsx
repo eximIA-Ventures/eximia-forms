@@ -1,6 +1,7 @@
 "use client";
 
 import { FormRenderer } from "@/components/renderer";
+import { useFormStore } from "@/stores/form-store";
 import { Sparkles } from "lucide-react";
 import type { FormSchema } from "@/lib/types";
 
@@ -11,12 +12,18 @@ interface PublicFormClientProps {
 
 export function PublicFormClient({ formId, schema }: PublicFormClientProps) {
   async function handleSubmit(data: Record<string, unknown>) {
+    const startedAt = useFormStore.getState().startedAt;
+    const durationMs = startedAt
+      ? Date.now() - new Date(startedAt).getTime()
+      : null;
+
     const res = await fetch(`/api/v1/forms/${formId}/submissions`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         data,
-        started_at: new Date().toISOString(),
+        started_at: startedAt || new Date().toISOString(),
+        duration_ms: durationMs,
       }),
     });
 
