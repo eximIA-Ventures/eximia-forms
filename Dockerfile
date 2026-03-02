@@ -14,9 +14,7 @@ RUN npm ci
 COPY . .
 RUN mkdir -p public
 
-ARG NEXT_PUBLIC_SUPABASE_URL
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
-
+# NEXT_PUBLIC_* vars are read from .env.production at build time
 RUN npm run build
 
 # --- Runner ---
