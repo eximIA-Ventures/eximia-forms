@@ -153,12 +153,25 @@ body {
   border-color: var(--form-accent);
 }
 
-.form-renderer button[class*="bg-accent"] {
+/* Solid accent buttons (submit, scale numbers) */
+.form-renderer button.form-btn-accent {
   background-color: var(--form-accent);
 }
 
+/* Accent text (question numbers, labels) */
 .form-renderer [class*="text-accent"] {
   color: var(--form-accent);
+}
+
+/* Accent border on selected options */
+.form-renderer [class*="border-accent"] {
+  border-color: var(--form-accent);
+}
+
+/* Selected option tint — uses CSS var so theme color is respected */
+.form-renderer .form-option-selected {
+  border-color: var(--form-accent);
+  background-color: color-mix(in srgb, var(--form-accent) 12%, transparent);
 }
 
 /* ── Form Renderer Light Mode ── */

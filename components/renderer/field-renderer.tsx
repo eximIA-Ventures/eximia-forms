@@ -145,7 +145,7 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                   className={cn(
                     "flex items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all",
                     isSelected
-                      ? "border-accent bg-accent/10 text-primary"
+                      ? "form-option-selected text-primary font-medium"
                       : "border-border hover:border-accent/30 hover:bg-elevated text-muted"
                   )}
                 >
@@ -153,11 +153,11 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                     className={cn(
                       "flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-all",
                       isSelected
-                        ? "border-accent bg-accent text-bg"
+                        ? "border-accent bg-accent"
                         : "border-border"
                     )}
                   >
-                    {isSelected && <Check size={12} strokeWidth={3} />}
+                    {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
                   </span>
                   {opt.label}
                 </button>
@@ -171,16 +171,21 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
 
     case "checkbox":
       return (
-        <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-border px-4 py-3 hover:border-accent/30 hover:bg-elevated transition-all">
+        <label className={cn(
+          "flex items-center gap-3 cursor-pointer rounded-lg border px-4 py-3 transition-all",
+          value
+            ? "form-option-selected"
+            : "border-border hover:border-accent/30 hover:bg-elevated"
+        )}>
           <span
             className={cn(
               "flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-all",
               value
-                ? "border-accent bg-accent text-bg"
+                ? "border-accent bg-accent"
                 : "border-border"
             )}
           >
-            {!!value && <Check size={12} strokeWidth={3} />}
+            {!!value && <Check size={12} strokeWidth={3} className="text-white" />}
           </span>
           <span className="text-sm">{element.label}</span>
           {error && <p className="text-xs text-danger ml-2">{error}</p>}
@@ -202,7 +207,7 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                   className={cn(
                     "flex items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all",
                     isSelected
-                      ? "border-accent bg-accent/10 text-primary"
+                      ? "form-option-selected text-primary font-medium"
                       : "border-border hover:border-accent/30 hover:bg-elevated text-muted"
                   )}
                 >
@@ -210,11 +215,11 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                     className={cn(
                       "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all",
                       isSelected
-                        ? "border-accent"
+                        ? "border-accent bg-accent"
                         : "border-border"
                     )}
                   >
-                    {isSelected && <span className="h-2.5 w-2.5 rounded-full bg-accent" />}
+                    {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
                   </span>
                   {opt.label}
                 </button>
@@ -316,7 +321,7 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                 className={cn(
                   "flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg border px-3 text-sm transition-all",
                   value === num
-                    ? "border-accent bg-accent text-bg font-medium"
+                    ? "form-btn-accent border-accent text-white font-medium"
                     : "border-border hover:border-accent/50 hover:bg-elevated"
                 )}
               >
@@ -345,7 +350,7 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-lg border text-sm transition-all",
                   value === i
-                    ? "border-accent bg-accent text-bg font-medium"
+                    ? "form-btn-accent border-accent text-white font-medium"
                     : "border-border hover:border-accent/50",
                   value !== i && i <= 6 && "hover:bg-danger/10",
                   value !== i && i >= 7 && i <= 8 && "hover:bg-warning/10",
