@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET(
   request: NextRequest,
@@ -32,7 +33,7 @@ export async function POST(
   { params }: { params: Promise<{ formId: string }> }
 ) {
   const { formId } = await params;
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Verify form is published
   const { data: form } = await supabase

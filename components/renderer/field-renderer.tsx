@@ -171,12 +171,16 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
 
     case "checkbox":
       return (
-        <label className={cn(
-          "flex items-center gap-3 cursor-pointer rounded-lg border px-4 py-3 transition-all",
-          value
-            ? "form-option-selected"
-            : "border-border hover:border-accent/30 hover:bg-elevated"
-        )}>
+        <button
+          type="button"
+          onClick={() => onChange(!value)}
+          className={cn(
+            "flex w-full items-center gap-3 cursor-pointer rounded-lg border px-4 py-3 text-left transition-all",
+            value
+              ? "form-option-selected"
+              : "border-border hover:border-accent/30 hover:bg-elevated"
+          )}
+        >
           <span
             className={cn(
               "flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-all",
@@ -189,7 +193,7 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
           </span>
           <span className="text-sm">{element.label}</span>
           {error && <p className="text-xs text-danger ml-2">{error}</p>}
-        </label>
+        </button>
       );
 
     case "radio": {
