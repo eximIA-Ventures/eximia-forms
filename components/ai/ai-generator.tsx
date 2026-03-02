@@ -2,15 +2,26 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ui/toast";
-import { Sparkles, Loader2, Replace, PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Sparkles,
+  Loader2,
+  Replace,
+  PlusCircle,
+  ChevronDown,
+  ChevronUp,
+  ClipboardPaste,
+} from "lucide-react";
 import { useBuilderStore } from "@/stores/builder-store";
 import type { FormSchema } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+type AiMode = "generate" | "import";
 
 export function AiGenerator() {
   const [prompt, setPrompt] = useState("");
   const [generating, setGenerating] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [aiMode, setAiMode] = useState<AiMode>("generate");
   const setSchema = useBuilderStore((s) => s.setSchema);
   const schema = useBuilderStore((s) => s.schema);
   const appendElements = useBuilderStore((s) => s.appendElements);
@@ -18,13 +29,13 @@ export function AiGenerator() {
 
   const hasExistingFields = schema.pages.some((p) => p.elements.length > 0);
 
-  async function handleGenerate(mode: "replace" | "append") {
+  async function handleGenerate(action: "replace" | "append") {
     if (!prompt.trim()) return;
     setGenerating(true);
 
     try {
-      const body: Record<string, unknown> = { prompt };
-      if (mode === "append") {
+      const body: Record<string, unknown> = { prompt, mode: aiMode };
+      if (action === "append") {
         const existingLabels = schema.pages
           .flatMap((p) => p.elements)
           .map((el) => el.label);
@@ -43,15 +54,19 @@ export function AiGenerator() {
         return;
       }
 
-      const { schema: aiSchema } = (await res.json()) as { schema: FormSchema };
+      const { schema: aiSchema } = (await res.json()) as {
+        schema: FormSchema;
+      };
 
-      if (mode === "replace") {
+      if (action === "replace") {
         setSchema(aiSchema);
-        // setSchema resets isDirty — AI-generated content needs saving
         useBuilderStore.setState({ isDirty: true });
-        toast.success("Formulário gerado com IA!");
+        toast.success(
+          aiMode === "import"
+            ? "Perguntas importadas com sucesso!"
+            : "Formulário gerado com IA!"
+        );
       } else {
-        // Append: add AI-generated elements to the current page atomically
         const newElements = aiSchema.pages.flatMap((p) => p.elements);
         appendElements(newElements);
         toast.success(`${newElements.length} campos adicionados!`);
@@ -66,9 +81,27 @@ export function AiGenerator() {
     }
   }
 
+  const placeholder =
+    aiMode === "import"
+      ? "Cole suas perguntas aqui, uma por linha:\n\n1. Qual seu nome completo?\n2. Qual seu email?\n3. De 0 a 10, qual a probabilidade de recomendar?\n..."
+      : "Ex: Formulário de qualificação de leads com nome, email, empresa, orçamento...";
+
+  const actionLabel =
+    aiMode === "import"
+      ? generating
+        ? "Importando..."
+        : hasExistingFields
+          ? "Substituir"
+          : "Importar"
+      : generating
+        ? "Gerando..."
+        : hasExistingFields
+          ? "Substituir"
+          : "Gerar";
+
   return (
     <div className="rounded-xl border border-accent/20 bg-accent/5 overflow-hidden">
-      {/* Collapsed header — clickable toggle */}
+      {/* Collapsed header */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="flex w-full items-center justify-between p-3 text-left"
@@ -87,16 +120,49 @@ export function AiGenerator() {
       {/* Expanded content */}
       {expanded && (
         <div className="px-3 pb-3 space-y-2">
+          {/* Mode tabs */}
+          <div className="flex rounded-lg bg-elevated p-0.5">
+            <button
+              onClick={() => setAiMode("generate")}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-medium transition-all",
+                aiMode === "generate"
+                  ? "bg-surface text-primary shadow-sm"
+                  : "text-muted hover:text-primary"
+              )}
+            >
+              <Sparkles size={11} />
+              Descrever
+            </button>
+            <button
+              onClick={() => setAiMode("import")}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-medium transition-all",
+                aiMode === "import"
+                  ? "bg-surface text-primary shadow-sm"
+                  : "text-muted hover:text-primary"
+              )}
+            >
+              <ClipboardPaste size={11} />
+              Importar
+            </button>
+          </div>
+
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Ex: Formulário de qualificação de leads com nome, email, empresa, orçamento..."
-            rows={3}
+            placeholder={placeholder}
+            rows={aiMode === "import" ? 6 : 3}
             className="w-full rounded-lg border border-border bg-elevated px-3 py-2 text-xs text-primary placeholder:text-muted/50 focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/20 resize-none transition-colors"
           />
 
-          <div className={cn("grid gap-1.5", hasExistingFields ? "grid-cols-2" : "grid-cols-1")}>
-            {/* Replace / Generate */}
+          <div
+            className={cn(
+              "grid gap-1.5",
+              hasExistingFields ? "grid-cols-2" : "grid-cols-1"
+            )}
+          >
+            {/* Replace / Generate / Import */}
             <button
               onClick={() => handleGenerate("replace")}
               disabled={generating || !prompt.trim()}
@@ -108,15 +174,17 @@ export function AiGenerator() {
             >
               {generating ? (
                 <Loader2 size={12} className="animate-spin" />
+              ) : aiMode === "import" ? (
+                <ClipboardPaste size={12} />
               ) : hasExistingFields ? (
                 <Replace size={12} />
               ) : (
                 <Sparkles size={12} />
               )}
-              {generating ? "Gerando..." : hasExistingFields ? "Substituir" : "Gerar"}
+              {actionLabel}
             </button>
 
-            {/* Append — only if form already has fields */}
+            {/* Append */}
             {hasExistingFields && (
               <button
                 onClick={() => handleGenerate("append")}

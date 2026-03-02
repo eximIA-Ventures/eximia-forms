@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { prompt, category, tone, length, multiplePages, audience, existingFields } =
+  const { prompt, category, tone, length, multiplePages, audience, existingFields, mode } =
     await request.json();
   if (!prompt) {
     return NextResponse.json(
@@ -56,59 +56,96 @@ export async function POST(request: NextRequest) {
   }
 
   // ── Build enriched prompt ──────────────────────────────────────
-  const parts: string[] = [
-    "Você é um especialista em criação de formulários. Crie um formulário baseado nas instruções abaixo.",
-    "",
-    "REGRAS GERAIS:",
-    "- Use campos apropriados para cada tipo de informação",
-    "- Use labels claros em português",
-    "- Marque campos como obrigatórios quando fizer sentido",
-    "- Para campos de escolha (select, radio), inclua opções relevantes",
-    "- Use NPS (0-10) para perguntas de recomendação",
-    "- Use rating (estrelas) para satisfação",
-    "- Use scale para opiniões em espectro",
-  ];
+  const parts: string[] = [];
 
-  // Category context
-  if (category && CATEGORY_CONTEXT[category]) {
-    parts.push("", `TIPO: ${CATEGORY_CONTEXT[category]}`);
-  }
-
-  // Tone
-  if (tone && TONE_CONTEXT[tone]) {
-    parts.push("", `TOM: ${TONE_CONTEXT[tone]}`);
-  }
-
-  // Length
-  if (length && LENGTH_CONTEXT[length]) {
-    parts.push("", `TAMANHO: ${LENGTH_CONTEXT[length]}`);
-  }
-
-  // Pages
-  if (multiplePages === true) {
-    parts.push("", "PÁGINAS: OBRIGATORIAMENTE use múltiplas páginas. Organize os campos em seções lógicas, cada seção em sua própria página.");
-  } else if (multiplePages === false) {
-    parts.push("", "PÁGINAS: Use APENAS uma única página. Todos os campos devem estar na mesma página.");
-  } else {
-    parts.push("", "PÁGINAS: Organize em páginas lógicas se o formulário tiver mais de 5 campos.");
-  }
-
-  // Audience
-  if (audience) {
-    parts.push("", `PÚBLICO-ALVO: ${audience}. Adapte a linguagem, os campos e as opções para esse público.`);
-  }
-
-  // Existing fields (append mode)
-  if (existingFields?.length) {
+  if (mode === "import") {
     parts.push(
+      "Você é um especialista em formulários. O usuário vai fornecer uma lista de perguntas JÁ PRONTAS.",
+      "Sua tarefa é APENAS estruturar essas perguntas como campos de formulário.",
       "",
-      `Campos já existentes no formulário (NÃO repita esses): ${existingFields.join(", ")}`,
-      "Gere APENAS campos NOVOS que complementem os existentes."
+      "REGRAS:",
+      "- NÃO invente perguntas novas. Use EXATAMENTE as perguntas fornecidas.",
+      "- Detecte o tipo de campo mais adequado para cada pergunta:",
+      "  • Perguntas com 'email' → email",
+      "  • Perguntas com 'telefone/celular/whatsapp' → phone",
+      "  • Perguntas com 'nome/empresa/cargo' → text",
+      "  • Perguntas com opções listadas ou 'escolha/selecione' → select ou radio",
+      "  • Perguntas com 'marque todos/quais dos' → multiselect",
+      "  • Perguntas com 'nota de 0 a 10' ou 'recomendaria' → nps",
+      "  • Perguntas com 'avalie/estrelas/satisfação' → rating",
+      "  • Perguntas com 'de 1 a X' → scale",
+      "  • Perguntas com 'data/quando' → date",
+      "  • Perguntas com 'descreva/comente/explique' ou respostas longas → textarea",
+      "  • Perguntas simples de resposta curta → text",
+      "  • Perguntas com 'sim ou não/aceita/concorda' → radio com opções Sim/Não",
+      "  • Perguntas com 'site/link/url' → url",
+      "- Se a pergunta lista opções (ex: 'a) ... b) ... c) ...'), extraia-as como options",
+      "- Use a pergunta original como label do campo",
+      "- Marque como obrigatório campos que pareçam essenciais (nome, email, pergunta principal)",
+      "- Organize em páginas lógicas se houver muitas perguntas (>5)",
+      "- Gere um título e descrição apropriados para o formulário baseado no contexto das perguntas",
+    );
+  } else {
+    parts.push(
+      "Você é um especialista em criação de formulários. Crie um formulário baseado nas instruções abaixo.",
+      "",
+      "REGRAS GERAIS:",
+      "- Use campos apropriados para cada tipo de informação",
+      "- Use labels claros em português",
+      "- Marque campos como obrigatórios quando fizer sentido",
+      "- Para campos de escolha (select, radio), inclua opções relevantes",
+      "- Use NPS (0-10) para perguntas de recomendação",
+      "- Use rating (estrelas) para satisfação",
+      "- Use scale para opiniões em espectro",
     );
   }
 
-  // User description
-  parts.push("", `DESCRIÇÃO DO FORMULÁRIO:`, prompt);
+  if (mode !== "import") {
+    // Category context
+    if (category && CATEGORY_CONTEXT[category]) {
+      parts.push("", `TIPO: ${CATEGORY_CONTEXT[category]}`);
+    }
+
+    // Tone
+    if (tone && TONE_CONTEXT[tone]) {
+      parts.push("", `TOM: ${TONE_CONTEXT[tone]}`);
+    }
+
+    // Length
+    if (length && LENGTH_CONTEXT[length]) {
+      parts.push("", `TAMANHO: ${LENGTH_CONTEXT[length]}`);
+    }
+
+    // Pages
+    if (multiplePages === true) {
+      parts.push("", "PÁGINAS: OBRIGATORIAMENTE use múltiplas páginas. Organize os campos em seções lógicas, cada seção em sua própria página.");
+    } else if (multiplePages === false) {
+      parts.push("", "PÁGINAS: Use APENAS uma única página. Todos os campos devem estar na mesma página.");
+    } else {
+      parts.push("", "PÁGINAS: Organize em páginas lógicas se o formulário tiver mais de 5 campos.");
+    }
+
+    // Audience
+    if (audience) {
+      parts.push("", `PÚBLICO-ALVO: ${audience}. Adapte a linguagem, os campos e as opções para esse público.`);
+    }
+
+    // Existing fields (append mode)
+    if (existingFields?.length) {
+      parts.push(
+        "",
+        `Campos já existentes no formulário (NÃO repita esses): ${existingFields.join(", ")}`,
+        "Gere APENAS campos NOVOS que complementem os existentes."
+      );
+    }
+  }
+
+  // User input
+  if (mode === "import") {
+    parts.push("", "PERGUNTAS DO USUÁRIO:", prompt);
+  } else {
+    parts.push("", "DESCRIÇÃO DO FORMULÁRIO:", prompt);
+  }
 
   const fullPrompt = parts.join("\n");
 
