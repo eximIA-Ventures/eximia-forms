@@ -1,0 +1,93 @@
+"use client";
+
+import { useEffect, useState, use } from "react";
+import { useBuilderStore } from "@/stores/builder-store";
+import { BuilderHeader, FieldPalette, BuilderCanvas, RightPanel } from "@/components/builder";
+import { useToast } from "@/components/ui/toast";
+import { ToastProvider } from "@/components/ui/toast";
+import type { FormSchema } from "@/lib/types";
+
+export default function FormEditPage({ params }: { params: Promise<{ formId: string }> }) {
+  const { formId } = use(params);
+  const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const setSchema = useBuilderStore((s) => s.setSchema);
+  const schema = useBuilderStore((s) => s.schema);
+  const markClean = useBuilderStore((s) => s.markClean);
+
+  useEffect(() => {
+    async function loadForm() {
+      const res = await fetch(`/api/v1/forms/${formId}`);
+      if (res.ok) {
+        const form = await res.json();
+        setSchema(form.schema as FormSchema);
+      }
+      setLoading(false);
+    }
+    loadForm();
+  }, [formId, setSchema]);
+
+  async function handleSave() {
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/v1/forms/${formId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: schema.title,
+          description: schema.description,
+          schema,
+        }),
+      });
+      if (res.ok) {
+        markClean();
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  // Keyboard shortcut: Ctrl+S to save
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [schema]);
+
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      const isDirty = useBuilderStore.getState().isDirty;
+      if (!isDirty) return;
+      e.preventDefault();
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-muted">Carregando formulário...</p>
+      </div>
+    );
+  }
+
+  return (
+    <ToastProvider>
+      <div className="flex h-screen flex-col">
+        <BuilderHeader formId={formId} onSave={handleSave} isSaving={isSaving} />
+        <div className="flex flex-1 overflow-hidden">
+          <FieldPalette />
+          <BuilderCanvas />
+          <RightPanel />
+        </div>
+      </div>
+    </ToastProvider>
+  );
+}
