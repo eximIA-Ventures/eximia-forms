@@ -1061,7 +1061,7 @@ function ExportDropdown({
       </Button>
 
       {open && (
-        <div className="absolute right-0 top-full z-20 mt-1 w-56 rounded-xl border border-border bg-surface p-1 shadow-xl">
+        <div className="absolute right-0 top-full z-20 mt-1 w-56 max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-surface p-1 shadow-xl">
           {items.map((item) => (
             <button
               key={item.label}

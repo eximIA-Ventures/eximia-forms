@@ -21,7 +21,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted hover:bg-elevated hover:text-primary transition-colors"
+      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-muted hover:bg-elevated hover:text-primary transition-colors"
       title={mode === "dark" ? "Modo claro" : "Modo escuro"}
     >
       {mode === "dark" ? <Sun size={16} /> : <Moon size={16} />}

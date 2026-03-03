@@ -186,7 +186,7 @@ export function FormRenderer({ formId, schema, onSubmit }: FormRendererProps) {
       <div className="mt-8 flex items-center justify-between">
         <div>
           {!isFirstPage && (
-            <Button variant="ghost" onClick={store.prevPage}>
+            <Button variant="ghost" onClick={store.prevPage} className="min-h-[44px]">
               <ChevronLeft size={16} />
               Anterior
             </Button>
@@ -194,7 +194,7 @@ export function FormRenderer({ formId, schema, onSubmit }: FormRendererProps) {
         </div>
         <div>
           {isLastPage ? (
-            <Button onClick={handleSubmit} disabled={store.isSubmitting}>
+            <Button onClick={handleSubmit} disabled={store.isSubmitting} className="min-h-[44px]">
               {store.isSubmitting ? (
                 "Enviando..."
               ) : (
@@ -205,7 +205,7 @@ export function FormRenderer({ formId, schema, onSubmit }: FormRendererProps) {
               )}
             </Button>
           ) : (
-            <Button onClick={handleNext}>
+            <Button onClick={handleNext} className="min-h-[44px]">
               Próximo
               <ChevronRight size={16} />
             </Button>

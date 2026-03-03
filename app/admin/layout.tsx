@@ -107,20 +107,20 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         {/* Mobile header */}
         <div className="flex flex-1 flex-col">
-          <header className="flex h-16 items-center justify-between border-b border-border bg-surface px-5 md:hidden">
+          <header className="flex h-14 items-center justify-between border-b border-border bg-surface px-5 md:hidden">
             <div className="flex items-center gap-2.5">
               <Image
                 src={isLight ? "/logo-horizontal-dark.svg" : "/logo-horizontal.svg"}
                 alt="eximIA"
-                width={120}
-                height={26}
+                width={110}
+                height={24}
               />
-              <span className="rounded-md bg-accent/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-accent">
+              <span className="rounded-md bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
                 Forms
               </span>
             </div>
             <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2">
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </header>
 
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               onClick={() => setMobileOpen(false)}
             >
               <nav
-                className="absolute left-0 top-16 bottom-0 w-72 bg-surface border-r border-border p-4 shadow-xl flex flex-col"
+                className="absolute left-0 top-14 bottom-0 w-72 max-w-[calc(100vw-3rem)] bg-surface border-r border-border p-4 shadow-xl flex flex-col"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex-1 space-y-1">
@@ -145,13 +145,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
                         className={cn(
-                          "flex items-center gap-3 rounded-lg px-4 py-3.5 text-base transition-colors",
+                          "flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors",
                           isActive
                             ? "bg-accent/10 text-accent font-medium"
                             : "text-muted hover:bg-elevated hover:text-primary"
                         )}
                       >
-                        <item.icon size={20} />
+                        <item.icon size={18} />
                         {item.label}
                       </Link>
                     );
@@ -161,9 +161,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                   <ThemeToggle />
                   <button
                     onClick={() => { setMobileOpen(false); handleSignOut(); }}
-                    className="flex w-full items-center gap-3 rounded-lg px-4 py-3.5 text-base text-muted hover:bg-elevated hover:text-primary"
+                    className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-muted hover:bg-elevated hover:text-primary"
                   >
-                    <LogOut size={20} />
+                    <LogOut size={18} />
                     Sair
                   </button>
                 </div>

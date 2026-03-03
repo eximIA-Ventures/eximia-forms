@@ -155,8 +155,8 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl sm:text-2xl font-bold">Dashboard</h1>
-          <p className="mt-1 text-base sm:text-sm text-muted">
+          <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
+          <p className="mt-1 text-sm text-muted">
             Visão geral dos seus formulários
           </p>
         </div>
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
           {/* Recent Forms */}
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl sm:text-lg font-semibold">Formulários recentes</h2>
+              <h2 className="text-lg md:text-xl font-semibold">Formulários recentes</h2>
               <Link
                 href="/admin/forms"
                 className="flex items-center gap-1 text-xs font-medium text-accent hover:text-accent-hover transition-colors"
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
                       key={form.id}
                       className="group flex items-center gap-4 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent/30"
                     >
-                      <div className="flex h-12 w-12 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10">
                         <FileText size={20} className="text-accent sm:size-[18px]" />
                       </div>
 
@@ -253,7 +253,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-2">
                           <Link
                             href={`/admin/forms/${form.id}/edit`}
-                            className="text-base sm:text-sm font-medium truncate hover:text-accent transition-colors"
+                            className="text-sm font-medium truncate hover:text-accent transition-colors"
                           >
                             {form.title || "Sem título"}
                           </Link>
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
                             {status.label}
                           </Badge>
                         </div>
-                        <div className="mt-0.5 flex items-center gap-3 text-sm sm:text-xs text-muted">
+                        <div className="mt-0.5 flex items-center gap-3 text-xs text-muted">
                           <span className="flex items-center gap-1">
                             <Users size={12} />
                             {subs?.total || 0} resposta{(subs?.total || 0) !== 1 ? "s" : ""}
@@ -273,11 +273,11 @@ export default function AdminDashboard() {
                         </div>
                       </div>
 
-                      <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex shrink-0 items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                         {form.status === "published" && (
                           <button
                             onClick={() => copyFormLink(form)}
-                            className="rounded-lg p-2 text-muted hover:bg-elevated hover:text-primary transition-colors"
+                            className="rounded-lg p-2.5 md:p-2 text-muted hover:bg-elevated hover:text-primary transition-colors"
                             title="Copiar link"
                           >
                             {copiedId === form.id ? (
@@ -289,14 +289,14 @@ export default function AdminDashboard() {
                         )}
                         <Link
                           href={`/admin/forms/${form.id}/responses`}
-                          className="rounded-lg p-2 text-muted hover:bg-elevated hover:text-primary transition-colors"
+                          className="rounded-lg p-2.5 md:p-2 text-muted hover:bg-elevated hover:text-primary transition-colors"
                           title="Ver respostas"
                         >
                           <Eye size={14} />
                         </Link>
                         <Link
                           href={`/admin/forms/${form.id}/edit`}
-                          className="rounded-lg p-2 text-muted hover:bg-elevated hover:text-primary transition-colors"
+                          className="rounded-lg p-2.5 md:p-2 text-muted hover:bg-elevated hover:text-primary transition-colors"
                           title="Editar"
                         >
                           <ExternalLink size={14} />
@@ -311,44 +311,44 @@ export default function AdminDashboard() {
 
           {/* Quick Actions */}
           <section>
-            <h2 className="mb-4 text-xl sm:text-lg font-semibold">Ações rápidas</h2>
+            <h2 className="mb-4 text-lg md:text-xl font-semibold">Ações rápidas</h2>
             <div className="grid gap-3 sm:grid-cols-3">
               <Link
                 href="/admin/forms/new"
-                className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 sm:p-4 transition-all hover:border-accent/50 hover:shadow-sm"
+                className="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent/50 hover:shadow-sm"
               >
-                <div className="rounded-lg bg-accent/10 p-3 sm:p-2.5">
+                <div className="rounded-lg bg-accent/10 p-2.5">
                   <Plus size={22} className="text-accent" />
                 </div>
                 <div>
-                  <p className="text-base sm:text-sm font-medium">Criar formulário</p>
-                  <p className="text-sm sm:text-xs text-muted">Em branco ou com IA</p>
+                  <p className="text-sm font-medium">Criar formulário</p>
+                  <p className="text-xs text-muted">Em branco ou com IA</p>
                 </div>
               </Link>
 
               <Link
                 href="/admin/forms"
-                className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 sm:p-4 transition-all hover:border-accent/50 hover:shadow-sm"
+                className="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent/50 hover:shadow-sm"
               >
-                <div className="rounded-lg bg-accent-alt/10 p-3 sm:p-2.5">
+                <div className="rounded-lg bg-accent-alt/10 p-2.5">
                   <FileText size={22} className="text-accent-alt" />
                 </div>
                 <div>
-                  <p className="text-base sm:text-sm font-medium">Meus formulários</p>
-                  <p className="text-sm sm:text-xs text-muted">Gerenciar todos</p>
+                  <p className="text-sm font-medium">Meus formulários</p>
+                  <p className="text-xs text-muted">Gerenciar todos</p>
                 </div>
               </Link>
 
               <Link
                 href="/admin/settings"
-                className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 sm:p-4 transition-all hover:border-accent/50 hover:shadow-sm"
+                className="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent/50 hover:shadow-sm"
               >
-                <div className="rounded-lg bg-info/10 p-3 sm:p-2.5">
+                <div className="rounded-lg bg-info/10 p-2.5">
                   <Zap size={22} className="text-info" />
                 </div>
                 <div>
-                  <p className="text-base sm:text-sm font-medium">Configurações</p>
-                  <p className="text-sm sm:text-xs text-muted">Workspace e integrações</p>
+                  <p className="text-sm font-medium">Configurações</p>
+                  <p className="text-xs text-muted">Workspace e integrações</p>
                 </div>
               </Link>
             </div>
@@ -359,7 +359,7 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl sm:text-lg font-semibold">Atividade recente</h2>
+              <h2 className="text-lg md:text-xl font-semibold">Atividade recente</h2>
             </div>
 
             {allRecentSubmissions.length === 0 ? (
@@ -411,7 +411,7 @@ export default function AdminDashboard() {
           {/* Published forms quick links */}
           {publishedForms > 0 && (
             <section>
-              <h2 className="mb-4 text-xl sm:text-lg font-semibold">Links públicos</h2>
+              <h2 className="mb-4 text-lg md:text-xl font-semibold">Links públicos</h2>
               <div className="space-y-2">
                 {data.forms
                   .filter((f) => f.status === "published")
@@ -464,13 +464,13 @@ function StatCard({
   return (
     <div className="rounded-xl border border-border bg-surface p-5 sm:p-5 transition-all hover:border-accent/20">
       <div className="flex items-center justify-between">
-        <span className="text-sm sm:text-xs font-medium text-muted">{label}</span>
+        <span className="text-xs font-medium text-muted">{label}</span>
         <div className={cn("rounded-lg p-2.5 sm:p-2", bgColor)}>
           <Icon size={18} className={color} />
         </div>
       </div>
-      <p className="mt-3 text-4xl sm:text-3xl font-bold tabular-nums">{value}</p>
-      <p className="mt-1 text-sm sm:text-xs text-muted">{detail}</p>
+      <p className="mt-3 text-3xl font-bold tabular-nums">{value}</p>
+      <p className="mt-1 text-xs text-muted">{detail}</p>
     </div>
   );
 }

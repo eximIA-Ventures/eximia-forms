@@ -177,8 +177,8 @@ export default function FormsListPage() {
       {/* Header */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl sm:text-2xl font-bold">Formulários</h1>
-          <p className="mt-1 text-base sm:text-sm text-muted">
+          <h1 className="text-2xl md:text-3xl font-bold">Formulários</h1>
+          <p className="mt-1 text-sm text-muted">
             {forms.length} formulário{forms.length !== 1 ? "s" : ""} criado
             {forms.length !== 1 ? "s" : ""}
           </p>
@@ -214,7 +214,7 @@ export default function FormsListPage() {
                   key={tab.key}
                   onClick={() => setFilter(tab.key)}
                   className={cn(
-                    "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+                    "rounded-md px-3 py-2 md:py-1.5 text-xs font-medium transition-all",
                     filter === tab.key
                       ? "bg-surface text-primary shadow-sm"
                       : "text-muted hover:text-primary"
@@ -241,7 +241,7 @@ export default function FormsListPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar formulários..."
-                className="h-9 w-full rounded-lg border border-border bg-surface pl-9 pr-3 text-sm text-primary placeholder:text-muted/50 focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/20 sm:w-64"
+                className="h-10 w-full rounded-lg border border-border bg-surface pl-9 pr-3 text-sm text-primary placeholder:text-muted/50 focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/20 sm:w-64"
               />
             </div>
           </div>
@@ -281,13 +281,13 @@ export default function FormsListPage() {
                                 menuOpen === form.id ? null : form.id
                               );
                             }}
-                            className="rounded-md p-1.5 text-muted opacity-0 hover:bg-elevated hover:text-primary group-hover:opacity-100 transition-opacity"
+                            className="rounded-md p-2.5 md:p-1.5 text-muted md:opacity-0 hover:bg-elevated hover:text-primary md:group-hover:opacity-100 transition-opacity"
                           >
                             <MoreVertical size={16} />
                           </button>
                           {menuOpen === form.id && (
                             <div
-                              className="absolute right-0 top-full z-10 mt-1 w-48 rounded-lg border border-border bg-surface py-1 shadow-xl"
+                              className="absolute right-0 top-full z-10 mt-1 w-48 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-surface py-1 shadow-xl"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <Link
@@ -378,7 +378,7 @@ export default function FormsListPage() {
                         {form.status === "published" && (
                           <button
                             onClick={() => copyFormLink(form)}
-                            className="rounded-md p-1.5 text-muted hover:bg-elevated hover:text-accent transition-colors"
+                            className="rounded-md p-2.5 md:p-1.5 text-muted hover:bg-elevated hover:text-accent transition-colors"
                             title="Copiar link"
                           >
                             {copiedId === form.id ? (
@@ -390,14 +390,14 @@ export default function FormsListPage() {
                         )}
                         <Link
                           href={`/admin/forms/${form.id}/responses`}
-                          className="rounded-md p-1.5 text-muted hover:bg-elevated hover:text-accent transition-colors"
+                          className="rounded-md p-2.5 md:p-1.5 text-muted hover:bg-elevated hover:text-accent transition-colors"
                           title="Ver respostas"
                         >
                           <Eye size={14} />
                         </Link>
                         <Link
                           href={`/admin/forms/${form.id}/edit`}
-                          className="rounded-md p-1.5 text-muted hover:bg-elevated hover:text-accent transition-colors"
+                          className="rounded-md p-2.5 md:p-1.5 text-muted hover:bg-elevated hover:text-accent transition-colors"
                           title="Editar"
                         >
                           <Pencil size={14} />

@@ -290,7 +290,7 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                 key={i}
                 type="button"
                 onClick={() => onChange(i + 1)}
-                className="p-1.5 transition-colors"
+                className="p-2 md:p-1.5 transition-colors"
               >
                 <Star
                   size={28}
