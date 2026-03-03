@@ -37,7 +37,7 @@ export function PublicFormClient({ formId, schema }: PublicFormClientProps) {
       <FormRenderer formId={formId} schema={schema} onSubmit={handleSubmit} />
 
       {/* Footer */}
-      <div className="mt-12 flex items-center justify-center gap-1.5 text-xs text-muted/40">
+      <div className="mt-8 sm:mt-12 flex items-center justify-center gap-1.5 text-xs text-muted/40">
         <Sparkles size={12} />
         <span>Powered by eximIA Forms</span>
       </div>

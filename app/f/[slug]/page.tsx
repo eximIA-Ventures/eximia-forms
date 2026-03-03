@@ -54,7 +54,7 @@ export default async function PublicFormPage({ params }: PageProps) {
 
   return (
     <div
-      className={isLight ? "min-h-screen py-8" : "min-h-screen bg-bg py-8"}
+      className={isLight ? "min-h-screen py-4 sm:py-8" : "min-h-screen bg-bg py-4 sm:py-8"}
       style={{ backgroundColor: bgColor || (isLight ? "#FFFFFF" : undefined) }}
     >
       <PublicFormClient

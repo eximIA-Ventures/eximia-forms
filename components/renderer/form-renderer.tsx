@@ -101,7 +101,7 @@ export function FormRenderer({ formId, schema, onSubmit }: FormRendererProps) {
   // Thank you screen
   if (store.isSubmitted) {
     return (
-      <div className={cn("form-renderer flex min-h-[60vh] flex-col items-center justify-center px-6 py-16 text-center", schema.theme?.mode === "light" && "form-renderer-light")} style={themeStyles}>
+      <div className={cn("form-renderer flex min-h-[60vh] flex-col items-center justify-center py-12 sm:py-16 text-center", schema.theme?.mode === "light" && "form-renderer-light")} style={themeStyles}>
         <div className="mb-4 rounded-full bg-accent-alt/10 p-4">
           <CheckCircle2 size={48} className="text-accent-alt" />
         </div>
@@ -116,7 +116,7 @@ export function FormRenderer({ formId, schema, onSubmit }: FormRendererProps) {
   }
 
   return (
-    <div className={cn("form-renderer px-4 py-8 sm:px-6", schema.theme?.mode === "light" && "form-renderer-light")} style={themeStyles}>
+    <div className={cn("form-renderer py-4 sm:py-8", schema.theme?.mode === "light" && "form-renderer-light")} style={themeStyles}>
       {/* Logo */}
       {schema.theme?.logo && (
         <div className="mb-6">
@@ -130,8 +130,8 @@ export function FormRenderer({ formId, schema, onSubmit }: FormRendererProps) {
       )}
 
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">{schema.title}</h1>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold">{schema.title}</h1>
         {schema.description && (
           <p className="mt-2 text-muted">{schema.description}</p>
         )}
@@ -139,7 +139,7 @@ export function FormRenderer({ formId, schema, onSubmit }: FormRendererProps) {
 
       {/* Progress bar */}
       {schema.settings.showProgressBar && schema.pages.length > 1 && (
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="mb-1 flex justify-between text-xs text-muted">
             <span>Página {store.currentPageIndex + 1} de {schema.pages.length}</span>
             <span>{Math.round(progress)}%</span>
