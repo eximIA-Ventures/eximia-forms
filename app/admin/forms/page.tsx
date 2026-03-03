@@ -177,14 +177,14 @@ export default function FormsListPage() {
       {/* Header */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Formulários</h1>
-          <p className="mt-1 text-sm text-muted">
+          <h1 className="text-3xl sm:text-2xl font-bold">Formulários</h1>
+          <p className="mt-1 text-base sm:text-sm text-muted">
             {forms.length} formulário{forms.length !== 1 ? "s" : ""} criado
             {forms.length !== 1 ? "s" : ""}
           </p>
         </div>
         <Button onClick={createForm} className="gap-1.5 w-full sm:w-auto">
-          <Plus size={16} />
+          <Plus size={18} />
           Novo formulário
         </Button>
       </div>
