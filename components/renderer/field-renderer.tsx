@@ -284,13 +284,13 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
       const currentRating = (value as number) || 0;
       return (
         <div>
-          <div className="flex gap-1">
+          <div className="flex gap-0.5">
             {Array.from({ length: max }).map((_, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => onChange(i + 1)}
-                className="transition-colors"
+                className="p-1.5 transition-colors"
               >
                 <Star
                   size={28}
@@ -323,7 +323,7 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                 type="button"
                 onClick={() => onChange(num)}
                 className={cn(
-                  "flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg border px-3 text-sm transition-all",
+                  "flex h-11 min-w-[2.75rem] items-center justify-center rounded-lg border px-3 text-sm transition-all",
                   value === num
                     ? "form-btn-accent border-accent text-white font-medium"
                     : "border-border hover:border-accent/50 hover:bg-elevated"
@@ -352,7 +352,7 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
                 type="button"
                 onClick={() => onChange(i)}
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-lg border text-sm transition-all",
+                  "flex h-11 w-11 items-center justify-center rounded-lg border text-sm transition-all",
                   value === i
                     ? "form-btn-accent border-accent text-white font-medium"
                     : "border-border hover:border-accent/50",

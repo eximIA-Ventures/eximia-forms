@@ -116,7 +116,7 @@ export function FormRenderer({ formId, schema, onSubmit }: FormRendererProps) {
   }
 
   return (
-    <div className={cn("form-renderer px-6 py-8", schema.theme?.mode === "light" && "form-renderer-light")} style={themeStyles}>
+    <div className={cn("form-renderer px-4 py-8 sm:px-6", schema.theme?.mode === "light" && "form-renderer-light")} style={themeStyles}>
       {/* Logo */}
       {schema.theme?.logo && (
         <div className="mb-6">

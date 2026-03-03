@@ -153,7 +153,7 @@ export default function AdminDashboard() {
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-8 flex items-end justify-between">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="mt-1 text-sm text-muted">
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
           </p>
         </div>
         <Link href="/admin/forms/new">
-          <Button size="sm" className="gap-1.5">
+          <Button size="sm" className="gap-1.5 w-full sm:w-auto">
             <Plus size={16} />
             Novo formulário
           </Button>

@@ -175,7 +175,7 @@ export default function FormsListPage() {
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="mb-6 flex items-end justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Formulários</h1>
           <p className="mt-1 text-sm text-muted">
@@ -183,7 +183,7 @@ export default function FormsListPage() {
             {forms.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <Button onClick={createForm} className="gap-1.5">
+        <Button onClick={createForm} className="gap-1.5 w-full sm:w-auto">
           <Plus size={16} />
           Novo formulário
         </Button>
@@ -208,7 +208,7 @@ export default function FormsListPage() {
           {/* Filters + Search */}
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Status tabs */}
-            <div className="flex gap-1 rounded-lg bg-elevated/50 p-1">
+            <div className="flex gap-1 overflow-x-auto rounded-lg bg-elevated/50 p-1">
               {FILTER_TABS.map((tab) => (
                 <button
                   key={tab.key}

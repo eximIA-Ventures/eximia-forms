@@ -123,7 +123,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login card */}
-        <div className="rounded-2xl border border-border/60 bg-surface/80 backdrop-blur-sm p-8 shadow-2xl shadow-black/20">
+        <div className="rounded-2xl border border-border/60 bg-surface/80 backdrop-blur-sm p-6 sm:p-8 shadow-2xl shadow-black/20">
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
               <Lock size={18} className="text-accent" />

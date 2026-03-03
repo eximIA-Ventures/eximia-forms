@@ -33,7 +33,7 @@ export function PublicFormClient({ formId, schema }: PublicFormClientProps) {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-2xl px-4">
       <FormRenderer formId={formId} schema={schema} onSubmit={handleSubmit} />
 
       {/* Footer */}

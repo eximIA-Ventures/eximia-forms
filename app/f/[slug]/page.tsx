@@ -38,7 +38,7 @@ export default async function PublicFormPage({ params }: PageProps) {
   if (error || !form) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg">
-        <div className="text-center">
+        <div className="px-4 text-center">
           <h1 className="text-2xl font-bold">Formulário não encontrado</h1>
           <p className="mt-2 text-muted">
             Este formulário pode ter sido encerrado ou não existe.

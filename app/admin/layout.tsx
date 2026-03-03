@@ -131,30 +131,42 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               onClick={() => setMobileOpen(false)}
             >
               <nav
-                className="absolute left-0 top-14 w-64 bg-surface border-r border-border p-3 space-y-1 shadow-xl"
+                className="absolute left-0 top-14 bottom-0 w-64 bg-surface border-r border-border p-3 shadow-xl flex flex-col"
                 onClick={(e) => e.stopPropagation()}
               >
-                {NAV_ITEMS.map((item) => {
-                  const isActive = item.exact
-                    ? pathname === item.href
-                    : pathname.startsWith(item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-                        isActive
-                          ? "bg-accent/10 text-accent font-medium"
-                          : "text-muted hover:bg-elevated hover:text-primary"
-                      )}
-                    >
-                      <item.icon size={16} />
-                      {item.label}
-                    </Link>
-                  );
-                })}
+                <div className="flex-1 space-y-1">
+                  {NAV_ITEMS.map((item) => {
+                    const isActive = item.exact
+                      ? pathname === item.href
+                      : pathname.startsWith(item.href);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm transition-colors",
+                          isActive
+                            ? "bg-accent/10 text-accent font-medium"
+                            : "text-muted hover:bg-elevated hover:text-primary"
+                        )}
+                      >
+                        <item.icon size={16} />
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+                <div className="border-t border-border pt-3 space-y-1">
+                  <ThemeToggle />
+                  <button
+                    onClick={() => { setMobileOpen(false); handleSignOut(); }}
+                    className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-muted hover:bg-elevated hover:text-primary"
+                  >
+                    <LogOut size={16} />
+                    Sair
+                  </button>
+                </div>
               </nav>
             </div>
           )}

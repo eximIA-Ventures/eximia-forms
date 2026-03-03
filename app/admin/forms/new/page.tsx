@@ -209,7 +209,7 @@ export default function NewFormPage() {
       </div>
 
       {/* Mode selector */}
-      <div className="mb-8 grid grid-cols-3 gap-3">
+      <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <button
           onClick={() => handleModeChange("blank")}
           className={cn(
@@ -393,7 +393,7 @@ export default function NewFormPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {FORM_CATEGORIES.map((cat) => {
                   const Icon = cat.icon;
                   const selected = category === cat.id;
@@ -498,7 +498,7 @@ export default function NewFormPage() {
                 <label className="mb-2 block text-xs font-medium text-muted">
                   Tamanho estimado
                 </label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {LENGTH_OPTIONS.map((l) => (
                     <button
                       key={l.id}

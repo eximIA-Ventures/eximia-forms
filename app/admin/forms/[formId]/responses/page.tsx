@@ -896,8 +896,8 @@ function ResponsesTab({
   onDelete: (submissionId: string) => void;
 }) {
   return (
-    <div className="rounded-xl border border-border overflow-hidden">
-      <table className="w-full">
+    <div className="rounded-xl border border-border overflow-x-auto">
+      <table className="w-full min-w-[480px]">
         <thead>
           <tr className="border-b border-border bg-elevated/50">
             <th className="px-4 py-3 text-left text-xs font-semibold text-muted">
