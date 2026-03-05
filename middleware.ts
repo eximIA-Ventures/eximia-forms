@@ -39,14 +39,6 @@ export async function middleware(request: NextRequest) {
   // Protect /admin routes (except /admin/login)
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     if (!user) {
-      const hasAuthCookie = request.cookies
-        .getAll()
-        .some((c) => c.name.startsWith("sb-") && c.name.includes("auth-token"));
-
-      if (error && hasAuthCookie) {
-        return supabaseResponse;
-      }
-
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/admin/login";
       loginUrl.searchParams.set("redirect", pathname);

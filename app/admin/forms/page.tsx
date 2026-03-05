@@ -32,6 +32,7 @@ const STATUS_MAP: Record<
   published: { label: "Publicado", variant: "success" },
   closed: { label: "Encerrado", variant: "warning" },
   archived: { label: "Arquivado", variant: "danger" },
+  pilot: { label: "Piloto", variant: "warning" },
 };
 
 const FILTER_TABS = [

@@ -1,0 +1,266 @@
+import type { FieldBundle } from "./index";
+
+function uid() {
+  return crypto.randomUUID().slice(0, 8);
+}
+
+export const agroBundles: FieldBundle[] = [
+  {
+    id: "agro-produtor",
+    name: "Produtor Rural",
+    description: "6 campos: hectares, culturas, sistema, crédito, cooperativa, município",
+    icon: "Tractor",
+    fields: [
+      {
+        id: uid(),
+        type: "number",
+        label: "Área da propriedade (hectares)",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {},
+        placeholder: "Ex: 150",
+      },
+      {
+        id: uid(),
+        type: "multiselect",
+        label: "Principais culturas",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Soja", value: "soja" },
+            { label: "Milho", value: "milho" },
+            { label: "Café", value: "cafe" },
+            { label: "Cana-de-açúcar", value: "cana" },
+            { label: "Algodão", value: "algodao" },
+            { label: "Pecuária", value: "pecuaria" },
+            { label: "Outra", value: "outra" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "radio",
+        label: "Sistema produtivo predominante",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Convencional", value: "convencional" },
+            { label: "Plantio direto", value: "plantio_direto" },
+            { label: "Orgânico", value: "organico" },
+            { label: "Integração lavoura-pecuária (ILP)", value: "ilp" },
+            { label: "Integração lavoura-pecuária-floresta (ILPF)", value: "ilpf" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "radio",
+        label: "Utiliza crédito rural?",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Sim, frequentemente", value: "sim_frequente" },
+            { label: "Sim, ocasionalmente", value: "sim_ocasional" },
+            { label: "Não", value: "nao" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "radio",
+        label: "É associado a alguma cooperativa?",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Sim", value: "sim" },
+            { label: "Não", value: "nao" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "text",
+        label: "Município / Estado",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {},
+        placeholder: "Ex: Ribeirão Preto - SP",
+      },
+    ],
+  },
+  {
+    id: "agro-agronomo",
+    name: "Agrônomo",
+    description: "5 campos: CREA, experiência, especialização, atividade, região",
+    icon: "Microscope",
+    fields: [
+      {
+        id: uid(),
+        type: "text",
+        label: "Registro CREA",
+        required: false,
+        validation: [],
+        conditions: [],
+        properties: {},
+        placeholder: "Ex: CREA-SP 123456",
+      },
+      {
+        id: uid(),
+        type: "select",
+        label: "Tempo de experiência",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Menos de 2 anos", value: "0-2" },
+            { label: "2 a 5 anos", value: "2-5" },
+            { label: "5 a 10 anos", value: "5-10" },
+            { label: "10 a 20 anos", value: "10-20" },
+            { label: "Mais de 20 anos", value: "20+" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "multiselect",
+        label: "Área de especialização",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Fitotecnia", value: "fitotecnia" },
+            { label: "Solos e nutrição", value: "solos" },
+            { label: "Proteção de plantas", value: "protecao" },
+            { label: "Irrigação", value: "irrigacao" },
+            { label: "Pecuária", value: "pecuaria" },
+            { label: "Agricultura de precisão", value: "precisao" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "radio",
+        label: "Atividade principal",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Consultoria técnica", value: "consultoria" },
+            { label: "Pesquisa/academia", value: "pesquisa" },
+            { label: "Extensão rural", value: "extensao" },
+            { label: "Indústria de insumos", value: "industria" },
+            { label: "Produtor", value: "produtor" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "text",
+        label: "Região de atuação",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {},
+        placeholder: "Ex: Norte do Paraná",
+      },
+    ],
+  },
+  {
+    id: "agro-consumidor",
+    name: "Consumidor",
+    description: "5 campos: frequência, canais, preço, orgânico, gasto",
+    icon: "ShoppingBasket",
+    fields: [
+      {
+        id: uid(),
+        type: "radio",
+        label: "Frequência de compra de alimentos",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Diariamente", value: "diario" },
+            { label: "2-3 vezes por semana", value: "2-3_semana" },
+            { label: "Semanalmente", value: "semanal" },
+            { label: "Quinzenalmente", value: "quinzenal" },
+            { label: "Mensalmente", value: "mensal" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "multiselect",
+        label: "Canais de compra mais utilizados",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Supermercado", value: "supermercado" },
+            { label: "Feira livre", value: "feira" },
+            { label: "Delivery / app", value: "delivery" },
+            { label: "Direto do produtor", value: "direto" },
+            { label: "Atacadão / atacarejo", value: "atacarejo" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "scale",
+        label: "Sensibilidade a preço",
+        description: "Quanto o preço influencia suas decisões de compra?",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: { min: 1, max: 5, minLabel: "Pouco influencia", maxLabel: "Muito influencia" },
+      },
+      {
+        id: uid(),
+        type: "radio",
+        label: "Preferência por produtos orgânicos",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Sempre compro orgânico", value: "sempre" },
+            { label: "Compro quando disponível", value: "quando_disponivel" },
+            { label: "Compro raramente", value: "raramente" },
+            { label: "Não compro", value: "nao" },
+          ],
+        },
+      },
+      {
+        id: uid(),
+        type: "select",
+        label: "Gasto mensal estimado com alimentação",
+        required: true,
+        validation: [],
+        conditions: [],
+        properties: {
+          options: [
+            { label: "Até R$ 500", value: "ate_500" },
+            { label: "R$ 500 - R$ 1.000", value: "500-1000" },
+            { label: "R$ 1.000 - R$ 2.000", value: "1000-2000" },
+            { label: "R$ 2.000 - R$ 3.000", value: "2000-3000" },
+            { label: "Acima de R$ 3.000", value: "acima_3000" },
+          ],
+        },
+      },
+    ],
+  },
+];

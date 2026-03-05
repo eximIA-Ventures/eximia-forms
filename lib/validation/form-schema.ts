@@ -23,6 +23,8 @@ export const fieldTypeSchema = z.enum([
   "file", "image",
   "rating", "scale", "nps",
   "heading", "paragraph", "divider",
+  "attention_check", "matrix", "semantic_differential",
+  "word_association", "ranking", "constant_sum",
 ]);
 
 export const formElementSchema = z.object({

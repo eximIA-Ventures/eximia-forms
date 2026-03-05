@@ -14,6 +14,9 @@ import {
   Calendar,
   Upload,
   Square,
+  GitBranch,
+  Pin,
+  PinOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +28,7 @@ interface SortableFieldCardProps {
   isSelected: boolean;
   onSelect: () => void;
   questionNumber?: number;
+  hasConditions?: boolean;
 }
 
 export function SortableFieldCard({
@@ -32,9 +36,11 @@ export function SortableFieldCard({
   isSelected,
   onSelect,
   questionNumber,
+  hasConditions,
 }: SortableFieldCardProps) {
   const removeElement = useBuilderStore((s) => s.removeElement);
   const duplicateElement = useBuilderStore((s) => s.duplicateElement);
+  const togglePinElement = useBuilderStore((s) => s.togglePinElement);
 
   const {
     attributes,
@@ -84,6 +90,21 @@ export function SortableFieldCard({
 
       {/* Actions */}
       <div className="absolute right-2 top-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            togglePinElement(element.id);
+          }}
+          className={cn(
+            "flex h-6 w-6 items-center justify-center rounded-md transition-colors",
+            element.pinned
+              ? "text-accent bg-accent/10"
+              : "text-muted hover:bg-elevated hover:text-primary"
+          )}
+          title={element.pinned ? "Desafixar posição" : "Fixar posição (não será embaralhado)"}
+        >
+          {element.pinned ? <Pin size={11} /> : <PinOff size={11} />}
+        </button>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -142,6 +163,18 @@ export function SortableFieldCard({
             {element.required && (
               <span className="text-[10px] text-danger font-medium">
                 obrigatório
+              </span>
+            )}
+            {hasConditions && (
+              <span className="flex items-center gap-0.5 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-medium text-amber-400" title="Tem condições de exibição">
+                <GitBranch size={8} />
+                condicional
+              </span>
+            )}
+            {element.pinned && (
+              <span className="flex items-center gap-0.5 rounded-full bg-accent/10 px-1.5 py-0.5 text-[9px] font-medium text-accent" title="Posição fixa durante aleatorização">
+                <Pin size={8} />
+                fixo
               </span>
             )}
             {!isLayout && (

@@ -4,8 +4,9 @@ import { useState } from "react";
 import { FIELD_TYPES, FIELD_CATEGORIES, type FieldType } from "@/lib/types";
 import { useBuilderStore } from "@/stores/builder-store";
 import { AiGenerator } from "@/components/ai";
+import { FIELD_BUNDLES } from "@/lib/bundles";
 import * as LucideIcons from "lucide-react";
-import { Search, ChevronRight } from "lucide-react";
+import { Search, ChevronRight, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,6 +23,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export function FieldPalette() {
   const addElement = useBuilderStore((s) => s.addElement);
+  const appendElements = useBuilderStore((s) => s.appendElements);
   const [search, setSearch] = useState("");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
@@ -62,6 +64,58 @@ export function FieldPalette() {
       <div className="px-3 pb-3">
         <AiGenerator />
       </div>
+
+      {/* Bundles (Pacotes) */}
+      {FIELD_BUNDLES.length > 0 && !search && (
+        <div className="px-3 pb-3">
+          <button
+            onClick={() => toggleCategory("_bundles")}
+            className="mb-2 flex w-full items-center gap-2 rounded-md px-1 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted hover:text-primary transition-colors"
+          >
+            <ChevronRight
+              size={10}
+              className={cn(
+                "transition-transform",
+                !collapsed["_bundles"] && "rotate-90"
+              )}
+            />
+            <Package size={11} />
+            Pacotes
+            <span className="ml-auto text-[9px] font-normal text-muted/50">
+              {FIELD_BUNDLES.length}
+            </span>
+          </button>
+          {!collapsed["_bundles"] && (
+            <div className="space-y-1.5">
+              {FIELD_BUNDLES.map((bundle) => {
+                const BundleIcon = Icons[bundle.icon] || LucideIcons.Square;
+                return (
+                  <button
+                    key={bundle.id}
+                    onClick={() => {
+                      // Generate fresh IDs for each field to avoid collisions
+                      const fieldsWithNewIds = bundle.fields.map((f) => ({
+                        ...f,
+                        id: crypto.randomUUID().slice(0, 8),
+                      }));
+                      appendElements(fieldsWithNewIds);
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-lg border border-transparent px-2.5 py-2 text-left transition-all hover:border-accent/30 hover:bg-accent/5"
+                  >
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
+                      <BundleIcon size={14} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-medium leading-tight">{bundle.name}</p>
+                      <p className="text-[9px] text-muted truncate">{bundle.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Categories */}
       <div className="flex-1 overflow-y-auto px-3 pb-4">

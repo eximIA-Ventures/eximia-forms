@@ -1,0 +1,133 @@
+import type { FormTemplate } from "./index";
+
+export const satisfactionSurveyTemplate: FormTemplate = {
+  id: "satisfaction-survey",
+  name: "Pesquisa de Satisfação (CSAT)",
+  description: "NPS, rating de satisfação, motivo da nota e feedback aberto",
+  icon: "ThumbsUp",
+  category: "feedback",
+  schema: {
+    version: 1,
+    title: "Pesquisa de Satisfação",
+    description: "Sua opinião é fundamental para melhorarmos nossos serviços.",
+    settings: {
+      allowMultipleSubmissions: false,
+      showProgressBar: true,
+      shufflePages: false,
+      requireAuth: false,
+      thankYouTitle: "Obrigado pelo seu feedback!",
+      thankYouMessage: "Sua avaliação foi registrada e será utilizada para melhorias contínuas.",
+    },
+    theme: {
+      primaryColor: "#C4A882",
+      backgroundColor: "#0A0A0A",
+      fontFamily: "Inter, system-ui, sans-serif",
+      borderRadius: 8,
+    },
+    pages: [
+      {
+        id: "nps",
+        title: "Recomendação",
+        elements: [
+          {
+            id: "nps_score",
+            type: "nps",
+            label: "De 0 a 10, qual a probabilidade de você nos recomendar a um amigo ou colega?",
+            required: true,
+            validation: [],
+            conditions: [],
+            properties: { min: 0, max: 10 },
+          },
+          {
+            id: "nps_reason",
+            type: "select",
+            label: "Qual o principal motivo da sua nota?",
+            required: true,
+            validation: [],
+            conditions: [],
+            properties: {
+              options: [
+                { label: "Qualidade do produto/serviço", value: "qualidade" },
+                { label: "Atendimento", value: "atendimento" },
+                { label: "Preço/custo-benefício", value: "preco" },
+                { label: "Facilidade de uso", value: "facilidade" },
+                { label: "Prazo de entrega", value: "prazo" },
+                { label: "Outro", value: "outro" },
+              ],
+            },
+          },
+        ],
+        conditions: [],
+      },
+      {
+        id: "rating",
+        title: "Avaliação detalhada",
+        elements: [
+          {
+            id: "rating_geral",
+            type: "rating",
+            label: "Satisfação geral",
+            description: "Como você avalia sua experiência conosco?",
+            required: true,
+            validation: [],
+            conditions: [],
+            properties: { max: 5 },
+          },
+          {
+            id: "rating_atendimento",
+            type: "rating",
+            label: "Qualidade do atendimento",
+            required: true,
+            validation: [],
+            conditions: [],
+            properties: { max: 5 },
+          },
+          {
+            id: "usaria_novamente",
+            type: "radio",
+            label: "Você usaria nossos serviços novamente?",
+            required: true,
+            validation: [],
+            conditions: [],
+            properties: {
+              options: [
+                { label: "Com certeza", value: "certeza" },
+                { label: "Provavelmente sim", value: "provavelmente_sim" },
+                { label: "Talvez", value: "talvez" },
+                { label: "Provavelmente não", value: "provavelmente_nao" },
+                { label: "Não", value: "nao" },
+              ],
+            },
+          },
+        ],
+        conditions: [],
+      },
+      {
+        id: "feedback",
+        title: "Comentários",
+        elements: [
+          {
+            id: "melhorar",
+            type: "textarea",
+            label: "O que podemos melhorar?",
+            description: "Sua sugestão nos ajuda a evoluir",
+            required: false,
+            validation: [],
+            conditions: [],
+            properties: {},
+          },
+          {
+            id: "elogio",
+            type: "textarea",
+            label: "Algo que você gostaria de elogiar?",
+            required: false,
+            validation: [],
+            conditions: [],
+            properties: {},
+          },
+        ],
+        conditions: [],
+      },
+    ],
+  },
+};

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { FormSchema, AttentionCheckResult } from "@/lib/types";
 
 export async function GET(
   request: NextRequest,
@@ -35,12 +36,12 @@ export async function POST(
   const { formId } = await params;
   const supabase = createAdminClient();
 
-  // Verify form is published
+  // Verify form is published or in pilot mode
   const { data: form } = await supabase
     .from("forms")
-    .select("id, status")
+    .select("id, status, schema")
     .eq("id", formId)
-    .eq("status", "published")
+    .in("status", ["published", "pilot"])
     .single();
 
   if (!form) {
@@ -49,6 +50,32 @@ export async function POST(
 
   const body = await request.json();
   const userAgent = request.headers.get("user-agent") || "";
+  const schema = form.schema as FormSchema;
+
+  // Evaluate attention checks
+  const attentionChecks: AttentionCheckResult[] = [];
+  for (const page of schema.pages) {
+    for (const el of page.elements) {
+      if (el.type === "attention_check" && el.properties.correctAnswer) {
+        const answer = body.data?.[el.id];
+        attentionChecks.push({
+          fieldId: el.id,
+          passed: String(answer) === String(el.properties.correctAnswer),
+        });
+      }
+    }
+  }
+
+  // Compute field completion map
+  const fieldCompletion: Record<string, boolean> = {};
+  for (const page of schema.pages) {
+    for (const el of page.elements) {
+      if (["heading", "paragraph", "divider"].includes(el.type)) continue;
+      const val = body.data?.[el.id];
+      fieldCompletion[el.id] = val !== undefined && val !== null && val !== "" &&
+        !(Array.isArray(val) && val.length === 0);
+    }
+  }
 
   const { data, error } = await supabase
     .from("form_submissions")
@@ -60,6 +87,9 @@ export async function POST(
         started_at: body.started_at || null,
         completed_at: new Date().toISOString(),
         duration_ms: body.duration_ms || null,
+        attention_checks: attentionChecks.length > 0 ? attentionChecks : undefined,
+        field_completion: fieldCompletion,
+        is_pilot: form.status === "pilot" ? true : undefined,
       },
       is_complete: true,
       page_history: body.page_history || [],

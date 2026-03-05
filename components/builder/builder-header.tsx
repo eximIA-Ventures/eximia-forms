@@ -20,6 +20,7 @@ import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useStore } from "zustand";
 import type { TemporalState } from "zundo";
+import { FormPreviewModal } from "./form-preview-modal";
 
 interface BuilderHeaderProps {
   formId: string;
@@ -44,6 +45,7 @@ export function BuilderHeader({ formId, onSave, isSaving }: BuilderHeaderProps) 
   const [justSaved, setJustSaved] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const guardedNavigate = useCallback(
     (href: string) => {
@@ -182,12 +184,21 @@ export function BuilderHeader({ formId, onSave, isSaving }: BuilderHeaderProps) 
 
         {/* Actions */}
         <button
+          onClick={() => setPreviewOpen(true)}
+          className="flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted hover:bg-elevated hover:text-primary transition-colors"
+          title="Preview do formulário"
+        >
+          <Eye size={13} />
+          Preview
+        </button>
+
+        <button
           onClick={() =>
             guardedNavigate(`/admin/forms/${formId}/responses`)
           }
           className="flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted hover:bg-elevated hover:text-primary transition-colors"
         >
-          <Eye size={13} />
+          <ExternalLink size={13} />
           Respostas
         </button>
 
@@ -246,6 +257,9 @@ export function BuilderHeader({ formId, onSave, isSaving }: BuilderHeaderProps) 
           </>
         )}
       </div>
+
+      {/* Preview Modal */}
+      <FormPreviewModal isOpen={previewOpen} onClose={() => setPreviewOpen(false)} />
     </header>
   );
 }

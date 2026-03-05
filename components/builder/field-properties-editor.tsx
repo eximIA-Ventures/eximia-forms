@@ -3,7 +3,8 @@
 import { useBuilderStore } from "@/stores/builder-store";
 import { FIELD_TYPES, type FormElement } from "@/lib/types";
 import { Input, Textarea, Button } from "@/components/ui";
-import { X, Plus, Trash2, Settings2, Type, ListChecks, ToggleLeft } from "lucide-react";
+import { X, Plus, Trash2, Settings2, Type, ListChecks, ToggleLeft, GitBranch, GripVertical } from "lucide-react";
+import { ConditionEditor } from "./condition-editor";
 import { cn } from "@/lib/utils";
 import * as LucideIcons from "lucide-react";
 
@@ -153,9 +154,186 @@ export function FieldPropertiesEditor() {
         </Section>
 
         {/* Options section */}
-        {["select", "multiselect", "radio"].includes(element.type) && (
+        {["select", "multiselect", "radio", "attention_check"].includes(element.type) && (
           <Section title="Opções" icon={ListChecks}>
             <OptionsEditor element={element} />
+          </Section>
+        )}
+
+        {/* Attention Check settings */}
+        {element.type === "attention_check" && (
+          <Section title="Verificação" icon={Settings2}>
+            <FieldGroup label="Resposta correta">
+              <Input
+                value={(element.properties.correctAnswer as string) || ""}
+                onChange={(e) =>
+                  updateElement(element.id, {
+                    properties: { ...element.properties, correctAnswer: e.target.value },
+                  })
+                }
+                placeholder="Valor correto da opção"
+              />
+            </FieldGroup>
+            <FieldGroup label="Tipo de exibição">
+              <select
+                value={(element.properties.displayType as string) || "radio"}
+                onChange={(e) =>
+                  updateElement(element.id, {
+                    properties: { ...element.properties, displayType: e.target.value },
+                  })
+                }
+                className="w-full rounded-lg border border-border bg-elevated px-3 py-2 text-xs text-primary"
+              >
+                <option value="radio">Múltipla escolha</option>
+                <option value="select">Dropdown</option>
+              </select>
+            </FieldGroup>
+          </Section>
+        )}
+
+        {/* Matrix settings */}
+        {element.type === "matrix" && (
+          <Section title="Linhas e Colunas" icon={ListChecks}>
+            <StringListEditor
+              label="Linhas (itens)"
+              items={(element.properties.rows as string[]) || []}
+              onChange={(rows) =>
+                updateElement(element.id, { properties: { ...element.properties, rows } })
+              }
+            />
+            <StringListEditor
+              label="Colunas (escala)"
+              items={(element.properties.columns as string[]) || []}
+              onChange={(columns) =>
+                updateElement(element.id, { properties: { ...element.properties, columns } })
+              }
+            />
+          </Section>
+        )}
+
+        {/* Semantic Differential settings */}
+        {element.type === "semantic_differential" && (
+          <Section title="Escala bipolar" icon={ListChecks}>
+            <FieldGroup label="Rótulo esquerdo">
+              <Input
+                value={(element.properties.leftLabel as string) || ""}
+                onChange={(e) =>
+                  updateElement(element.id, {
+                    properties: { ...element.properties, leftLabel: e.target.value },
+                  })
+                }
+                placeholder="Ex: Nada acessível"
+              />
+            </FieldGroup>
+            <FieldGroup label="Rótulo direito">
+              <Input
+                value={(element.properties.rightLabel as string) || ""}
+                onChange={(e) =>
+                  updateElement(element.id, {
+                    properties: { ...element.properties, rightLabel: e.target.value },
+                  })
+                }
+                placeholder="Ex: Muito acessível"
+              />
+            </FieldGroup>
+            <FieldGroup label="Pontos">
+              <Input
+                type="number"
+                min={3}
+                max={11}
+                value={(element.properties.points as number) || 5}
+                onChange={(e) =>
+                  updateElement(element.id, {
+                    properties: { ...element.properties, points: parseInt(e.target.value) || 5 },
+                  })
+                }
+              />
+            </FieldGroup>
+          </Section>
+        )}
+
+        {/* Word Association settings */}
+        {element.type === "word_association" && (
+          <Section title="Termos-estímulo" icon={ListChecks}>
+            <StringListEditor
+              label="Termos"
+              items={(element.properties.terms as string[]) || []}
+              onChange={(terms) =>
+                updateElement(element.id, { properties: { ...element.properties, terms } })
+              }
+            />
+            <FieldGroup label="Placeholder">
+              <Input
+                value={(element.properties.termPlaceholder as string) || ""}
+                onChange={(e) =>
+                  updateElement(element.id, {
+                    properties: { ...element.properties, termPlaceholder: e.target.value },
+                  })
+                }
+                placeholder="Primeira palavra que vem à mente..."
+              />
+            </FieldGroup>
+          </Section>
+        )}
+
+        {/* Ranking settings */}
+        {element.type === "ranking" && (
+          <Section title="Itens para ordenar" icon={ListChecks}>
+            <StringListEditor
+              label="Itens"
+              items={(element.properties.items as string[]) || []}
+              onChange={(items) =>
+                updateElement(element.id, { properties: { ...element.properties, items } })
+              }
+            />
+          </Section>
+        )}
+
+        {/* Constant Sum settings */}
+        {element.type === "constant_sum" && (
+          <Section title="Distribuição" icon={ListChecks}>
+            <StringListEditor
+              label="Itens"
+              items={(element.properties.items as string[]) || []}
+              onChange={(items) =>
+                updateElement(element.id, { properties: { ...element.properties, items } })
+              }
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <FieldGroup label="Total">
+                <Input
+                  type="number"
+                  min={1}
+                  value={(element.properties.total as number) || 100}
+                  onChange={(e) =>
+                    updateElement(element.id, {
+                      properties: { ...element.properties, total: parseInt(e.target.value) || 100 },
+                    })
+                  }
+                />
+              </FieldGroup>
+              <FieldGroup label="Unidade">
+                <select
+                  value={(element.properties.unit as string) || "pontos"}
+                  onChange={(e) =>
+                    updateElement(element.id, {
+                      properties: { ...element.properties, unit: e.target.value },
+                    })
+                  }
+                  className="w-full rounded-lg border border-border bg-elevated px-3 py-2 text-xs text-primary"
+                >
+                  <option value="pontos">pontos</option>
+                  <option value="%">%</option>
+                </select>
+              </FieldGroup>
+            </div>
+          </Section>
+        )}
+
+        {/* Conditions section */}
+        {!["heading", "paragraph", "divider"].includes(element.type) && (
+          <Section title="Condições" icon={GitBranch}>
+            <ConditionEditor element={element} />
           </Section>
         )}
 
@@ -164,7 +342,7 @@ export function FieldPropertiesEditor() {
           <Section title="Configurações" icon={ToggleLeft}>
             {/* Required toggle */}
             <div className="flex items-center justify-between py-1">
-              <label className="text-sm text-cream-dim">Obrigatório</label>
+              <label className="text-xs text-cream-dim">Obrigatório</label>
               <button
                 onClick={() =>
                   updateElement(element.id, {
@@ -203,6 +381,34 @@ export function FieldPropertiesEditor() {
                   }
                 />
               </FieldGroup>
+            )}
+
+            {/* Shuffle options toggle (for choice fields) */}
+            {["select", "multiselect", "radio"].includes(element.type) && (
+              <div className="flex items-center justify-between py-1">
+                <label className="text-xs text-cream-dim">Aleatorizar opções</label>
+                <button
+                  onClick={() =>
+                    updateElement(element.id, {
+                      properties: {
+                        ...element.properties,
+                        shuffleOptions: !element.properties.shuffleOptions,
+                      },
+                    })
+                  }
+                  className={cn(
+                    "relative h-6 w-11 rounded-full transition-colors",
+                    (element.properties.shuffleOptions as boolean) ? "bg-accent" : "bg-border"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-primary transition-transform shadow-sm",
+                      (element.properties.shuffleOptions as boolean) && "translate-x-5"
+                    )}
+                  />
+                </button>
+              </div>
             )}
 
             {/* Scale min/max/labels */}
@@ -334,6 +540,60 @@ function normalizeOptions(raw: unknown): { label: string; value: string }[] {
   if (!Array.isArray(raw)) return [];
   return raw.map((opt) =>
     typeof opt === "string" ? { label: opt, value: opt } : opt
+  );
+}
+
+/* ─── String list editor (for matrix rows/columns, ranking items, etc.) ─── */
+
+function StringListEditor({
+  label,
+  items,
+  onChange,
+}: {
+  label: string;
+  items: string[];
+  onChange: (items: string[]) => void;
+}) {
+  const updateElement = useBuilderStore((s) => s.updateElement);
+
+  return (
+    <div>
+      <label className="mb-1.5 block text-xs font-medium text-muted">{label}</label>
+      <div className="space-y-1.5">
+        {items.map((item, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-[10px] text-muted/50 bg-elevated">
+              {index + 1}
+            </span>
+            <Input
+              value={item}
+              onChange={(e) => {
+                const newItems = [...items];
+                newItems[index] = e.target.value;
+                onChange(newItems);
+              }}
+              className="flex-1"
+            />
+            <button
+              onClick={() => onChange(items.filter((_, i) => i !== index))}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-danger/10 hover:text-danger transition-colors"
+              disabled={items.length <= 1}
+            >
+              <Trash2 size={12} />
+            </button>
+          </div>
+        ))}
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="mt-2 w-full border border-dashed border-border hover:border-accent/30"
+        onClick={() => onChange([...items, `Item ${items.length + 1}`])}
+      >
+        <Plus size={12} />
+        Adicionar
+      </Button>
+    </div>
   );
 }
 

@@ -2,7 +2,7 @@
 
 import { useBuilderStore } from "@/stores/builder-store";
 import { Input, Textarea, Select } from "@/components/ui";
-import { Image, Palette, Type, MessageSquare, Upload, Sun, Moon, X } from "lucide-react";
+import { Image, Palette, Type, MessageSquare, Upload, Sun, Moon, X, Shuffle } from "lucide-react";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +17,10 @@ const MAX_LOGO_SIZE = 512 * 1024; // 512 KB
 export function FormSettingsEditor() {
   const theme = useBuilderStore((s) => s.schema.theme);
   const settings = useBuilderStore((s) => s.schema.settings);
+  const schema = useBuilderStore((s) => s.schema);
   const updateTheme = useBuilderStore((s) => s.updateTheme);
   const updateSettings = useBuilderStore((s) => s.updateSettings);
+  const updatePage = useBuilderStore((s) => s.updatePage);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const logo = theme?.logo || "";
@@ -198,6 +200,43 @@ export function FormSettingsEditor() {
               updateTheme({ borderRadius: parseInt(e.target.value) || 0 })
             }
           />
+        </FieldGroup>
+      </Section>
+
+      {/* Aleatorização */}
+      <Section title="Aleatorização" icon={Shuffle}>
+        <FieldGroup label="Aleatorizar ordem das páginas">
+          <label className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5 cursor-pointer hover:bg-elevated/50 transition-colors">
+            <span className="text-xs text-muted">Embaralha as páginas do meio (primeira e última permanecem fixas)</span>
+            <input
+              type="checkbox"
+              checked={settings.shufflePages}
+              onChange={(e) => updateSettings({ shufflePages: e.target.checked })}
+              className="h-4 w-4 rounded border-border accent-accent"
+            />
+          </label>
+        </FieldGroup>
+        <FieldGroup label="Aleatorizar questões por página">
+          <div className="space-y-1.5">
+            {schema.pages.map((page, index) => (
+              <label
+                key={page.id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2 cursor-pointer hover:bg-elevated/50 transition-colors"
+              >
+                <span className="text-xs text-muted truncate">
+                  {page.title || `Página ${index + 1}`}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={page.shuffleElements || false}
+                  onChange={(e) =>
+                    updatePage(index, { shuffleElements: e.target.checked })
+                  }
+                  className="h-4 w-4 shrink-0 rounded border-border accent-accent"
+                />
+              </label>
+            ))}
+          </div>
         </FieldGroup>
       </Section>
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/toast";
+import * as LucideIcons from "lucide-react";
 import {
   FileText,
   Sparkles,
@@ -22,7 +23,11 @@ import {
   Check,
   ClipboardPaste,
 } from "lucide-react";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Icons = LucideIcons as unknown as Record<string, React.ComponentType<any>>;
 import { cn } from "@/lib/utils";
+import { FORM_TEMPLATES } from "@/lib/templates";
 
 // ── Category definitions ────────────────────────────────────────────
 const FORM_CATEGORIES = [
@@ -52,7 +57,7 @@ const LENGTH_OPTIONS = [
   { id: "long", label: "Longo", description: "16+ campos", fields: "16+" },
 ] as const;
 
-type CreationMode = "blank" | "ai" | "import";
+type CreationMode = "blank" | "ai" | "import" | "template";
 type AiStep = "category" | "details" | "generating";
 
 export default function NewFormPage() {
@@ -153,6 +158,31 @@ export default function NewFormPage() {
     setCreating(false);
   }
 
+  // ── Create from template ──
+  async function handleCreateFromTemplate(templateId: string) {
+    const template = FORM_TEMPLATES.find((t) => t.id === templateId);
+    if (!template) return;
+    setCreating(true);
+
+    const res = await fetch("/api/v1/forms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: template.schema.title || template.name,
+        description: template.schema.description || template.description,
+        schema: template.schema,
+      }),
+    });
+
+    if (res.ok) {
+      const form = await res.json();
+      router.push(`/admin/forms/${form.id}/edit`);
+    } else {
+      toast.error("Erro ao criar formulário a partir do template");
+      setCreating(false);
+    }
+  }
+
   // ── Import questions ──
   async function handleImport() {
     if (!importText.trim()) return;
@@ -197,6 +227,7 @@ export default function NewFormPage() {
     blank: "Comece do zero e monte campo por campo",
     ai: "Descreva o que precisa e a IA cria para você",
     import: "Cole suas perguntas prontas e a IA estrutura o formulário",
+    template: "Escolha um template pronto e personalize no builder",
   };
 
   // ── Render ──
@@ -209,57 +240,32 @@ export default function NewFormPage() {
       </div>
 
       {/* Mode selector */}
-      <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <button
-          onClick={() => handleModeChange("blank")}
-          className={cn(
-            "flex flex-col items-center gap-2 rounded-xl border p-5 transition-all",
-            mode === "blank"
-              ? "border-accent bg-accent/5 shadow-sm shadow-accent/10"
-              : "border-border hover:border-accent/30"
-          )}
-        >
-          <FileText
-            size={24}
-            className={mode === "blank" ? "text-accent" : "text-muted"}
-          />
-          <span className="text-sm font-medium">Em branco</span>
-          <span className="text-xs text-muted">Comece do zero</span>
-        </button>
-
-        <button
-          onClick={() => handleModeChange("ai")}
-          className={cn(
-            "flex flex-col items-center gap-2 rounded-xl border p-5 transition-all",
-            mode === "ai"
-              ? "border-accent bg-accent/5 shadow-sm shadow-accent/10"
-              : "border-border hover:border-accent/30"
-          )}
-        >
-          <Sparkles
-            size={24}
-            className={mode === "ai" ? "text-accent" : "text-muted"}
-          />
-          <span className="text-sm font-medium">Criar com IA</span>
-          <span className="text-xs text-muted">Descreva e gere</span>
-        </button>
-
-        <button
-          onClick={() => handleModeChange("import")}
-          className={cn(
-            "flex flex-col items-center gap-2 rounded-xl border p-5 transition-all",
-            mode === "import"
-              ? "border-accent bg-accent/5 shadow-sm shadow-accent/10"
-              : "border-border hover:border-accent/30"
-          )}
-        >
-          <ClipboardPaste
-            size={24}
-            className={mode === "import" ? "text-accent" : "text-muted"}
-          />
-          <span className="text-sm font-medium">Importar</span>
-          <span className="text-xs text-muted">Perguntas prontas</span>
-        </button>
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {([
+          { id: "blank" as CreationMode, icon: FileText, label: "Em branco", desc: "Comece do zero" },
+          { id: "ai" as CreationMode, icon: Sparkles, label: "Criar com IA", desc: "Descreva e gere" },
+          { id: "template" as CreationMode, icon: ClipboardList, label: "Template", desc: "Modelos prontos" },
+          { id: "import" as CreationMode, icon: ClipboardPaste, label: "Importar", desc: "Perguntas prontas" },
+        ] as const).map((opt) => {
+          const Icon = opt.icon;
+          const selected = mode === opt.id;
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleModeChange(opt.id)}
+              className={cn(
+                "flex flex-col items-center gap-2 rounded-xl border p-5 transition-all",
+                selected
+                  ? "border-accent bg-accent/5 shadow-sm shadow-accent/10"
+                  : "border-border hover:border-accent/30"
+              )}
+            >
+              <Icon size={24} className={selected ? "text-accent" : "text-muted"} />
+              <span className="text-sm font-medium">{opt.label}</span>
+              <span className="text-xs text-muted">{opt.desc}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ═══ BLANK MODE ═══ */}
@@ -296,6 +302,65 @@ export default function NewFormPage() {
               {creating ? "Criando..." : "Criar formulário"}
             </Button>
           </div>
+        </div>
+      )}
+
+      {/* ═══ TEMPLATE MODE ═══ */}
+      {mode === "template" && !creating && (
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-sm font-semibold">Escolha um template</h2>
+            <p className="mt-0.5 text-xs text-muted">
+              Selecione um modelo pronto para personalizar no builder
+            </p>
+          </div>
+
+          {FORM_TEMPLATES.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted">
+              Nenhum template disponível ainda.
+            </p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {FORM_TEMPLATES.map((tmpl) => {
+                const TmplIcon = Icons[tmpl.icon] || FileText;
+                return (
+                  <button
+                    key={tmpl.id}
+                    onClick={() => handleCreateFromTemplate(tmpl.id)}
+                    disabled={creating}
+                    className="flex items-start gap-3 rounded-xl border border-border p-4 text-left transition-all hover:border-accent/30 hover:bg-accent/5 hover:shadow-sm hover:shadow-accent/10 active:scale-[0.98]"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                      <TmplIcon size={20} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">{tmpl.name}</p>
+                      <p className="mt-0.5 text-xs text-muted line-clamp-2">
+                        {tmpl.description}
+                      </p>
+                      <span className="mt-2 inline-block rounded-full bg-elevated px-2 py-0.5 text-[10px] text-muted">
+                        {tmpl.schema.pages.length} página{tmpl.schema.pages.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <Button variant="outline" onClick={() => router.push("/admin/forms")}>
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Template creating state */}
+      {mode === "template" && creating && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Loader2 size={32} className="animate-spin text-accent" />
+          <p className="mt-4 text-sm text-muted">Criando formulário...</p>
         </div>
       )}
 

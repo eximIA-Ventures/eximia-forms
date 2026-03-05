@@ -1,17 +1,23 @@
 "use client";
 
+import { useMemo } from "react";
 import type { FormElement } from "@/lib/types";
 import { useFormStore } from "@/stores/form-store";
 import { Input, Textarea, Select } from "@/components/ui";
 import { Star, Check } from "lucide-react";
+import { MatrixField } from "./matrix-field";
+import { RankingField } from "./ranking-field";
+import { ConstantSumField } from "./constant-sum-field";
+import { shuffle } from "@/lib/utils/shuffle";
 import { cn } from "@/lib/utils";
 
 interface FieldRendererProps {
   element: FormElement;
   questionNumber?: number;
+  shuffleSeed?: string;
 }
 
-export function FieldRenderer({ element, questionNumber }: FieldRendererProps) {
+export function FieldRenderer({ element, questionNumber, shuffleSeed }: FieldRendererProps) {
   const answers = useFormStore((s) => s.answers);
   const errors = useFormStore((s) => s.errors);
   const setAnswer = useFormStore((s) => s.setAnswer);
@@ -54,7 +60,7 @@ export function FieldRenderer({ element, questionNumber }: FieldRendererProps) {
       {element.description && (
         <p className="mb-3 text-xs text-muted">{element.description}</p>
       )}
-      <FieldInput element={element} value={value} error={error} onChange={(v) => setAnswer(element.id, v)} />
+      <FieldInput element={element} value={value} error={error} onChange={(v) => setAnswer(element.id, v)} shuffleSeed={shuffleSeed} />
     </div>
   );
 }
@@ -64,6 +70,7 @@ interface FieldInputProps {
   value: unknown;
   error?: string;
   onChange: (value: unknown) => void;
+  shuffleSeed?: string;
 }
 
 function normalizeOptions(raw: unknown): { label: string; value: string }[] {
@@ -73,7 +80,16 @@ function normalizeOptions(raw: unknown): { label: string; value: string }[] {
   );
 }
 
-function FieldInput({ element, value, error, onChange }: FieldInputProps) {
+function FieldInput({ element, value, error, onChange, shuffleSeed }: FieldInputProps) {
+  // Memoize shuffled options per element — use shuffleSeed + element.id for per-respondent randomization
+  const shuffledOptions = useMemo(() => {
+    const opts = normalizeOptions(element.properties.options);
+    if (element.properties.shuffleOptions) {
+      return shuffle(opts, (shuffleSeed || "") + element.id);
+    }
+    return opts;
+  }, [element.properties.options, element.properties.shuffleOptions, element.id, shuffleSeed]);
+
   switch (element.type) {
     case "text":
     case "email":
@@ -117,19 +133,18 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
         <Select
           value={(value as string) || ""}
           onChange={(e) => onChange(e.target.value)}
-          options={normalizeOptions(element.properties.options)}
+          options={shuffledOptions}
           placeholder="Selecione..."
           error={error}
         />
       );
 
     case "multiselect": {
-      const opts = normalizeOptions(element.properties.options);
       const selected = (value as string[]) || [];
       return (
         <div>
           <div className="grid gap-2 sm:grid-cols-2">
-            {opts.map((opt) => {
+            {shuffledOptions.map((opt) => {
               const isSelected = selected.includes(opt.value);
               return (
                 <button
@@ -197,11 +212,10 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
       );
 
     case "radio": {
-      const opts = normalizeOptions(element.properties.options);
       return (
         <div>
           <div className="grid gap-2 sm:grid-cols-2">
-            {opts.map((opt) => {
+            {shuffledOptions.map((opt) => {
               const isSelected = value === opt.value;
               return (
                 <button
@@ -371,6 +385,159 @@ function FieldInput({ element, value, error, onChange }: FieldInputProps) {
           </div>
           {error && <p className="mt-1 text-xs text-danger">{error}</p>}
         </div>
+      );
+    }
+
+    // ── New field types ──
+
+    case "attention_check": {
+      const displayType = (element.properties.displayType as string) || "radio";
+      const opts = normalizeOptions(element.properties.options);
+      if (displayType === "select") {
+        return (
+          <Select
+            value={(value as string) || ""}
+            onChange={(e) => onChange(e.target.value)}
+            options={opts}
+            placeholder="Selecione..."
+            error={error}
+          />
+        );
+      }
+      // Default: radio
+      return (
+        <div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {opts.map((opt) => {
+              const isSelected = value === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => onChange(opt.value)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all",
+                    isSelected
+                      ? "form-option-selected text-primary font-medium"
+                      : "border-border hover:border-accent/30 hover:bg-elevated text-muted"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all",
+                      isSelected ? "border-accent bg-accent" : "border-border"
+                    )}
+                  >
+                    {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
+                  </span>
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+          {error && <p className="mt-2 text-xs text-danger">{error}</p>}
+        </div>
+      );
+    }
+
+    case "matrix": {
+      const rows = (element.properties.rows as string[]) || [];
+      const columns = (element.properties.columns as string[]) || [];
+      return (
+        <MatrixField
+          rows={rows}
+          columns={columns}
+          value={(value as Record<string, string>) || {}}
+          onChange={onChange}
+          error={error}
+        />
+      );
+    }
+
+    case "semantic_differential": {
+      const leftLabel = (element.properties.leftLabel as string) || "";
+      const rightLabel = (element.properties.rightLabel as string) || "";
+      const points = (element.properties.points as number) || 5;
+      return (
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted shrink-0 w-20 text-right sm:w-auto">{leftLabel}</span>
+            <div className="flex flex-1 justify-center gap-2">
+              {Array.from({ length: points }).map((_, i) => {
+                const isSelected = value === i + 1;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => onChange(i + 1)}
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all",
+                      isSelected
+                        ? "border-accent bg-accent"
+                        : "border-border hover:border-accent/50"
+                    )}
+                  >
+                    {isSelected && <span className="h-2.5 w-2.5 rounded-full bg-white" />}
+                  </button>
+                );
+              })}
+            </div>
+            <span className="text-xs text-muted shrink-0 w-20 sm:w-auto">{rightLabel}</span>
+          </div>
+          {error && <p className="mt-2 text-xs text-danger">{error}</p>}
+        </div>
+      );
+    }
+
+    case "word_association": {
+      const terms = (element.properties.terms as string[]) || [];
+      const termPlaceholder = (element.properties.termPlaceholder as string) || "Primeira palavra que vem à mente...";
+      const currentValue = (value as Record<string, string>) || {};
+      return (
+        <div>
+          <div className="space-y-2">
+            {terms.map((term) => (
+              <div key={term} className="flex items-center gap-3">
+                <span className="min-w-[100px] text-sm font-medium">{term}</span>
+                <Input
+                  value={currentValue[term] || ""}
+                  onChange={(e) => onChange({ ...currentValue, [term]: e.target.value })}
+                  placeholder={termPlaceholder}
+                  className="flex-1"
+                />
+              </div>
+            ))}
+          </div>
+          {error && <p className="mt-2 text-xs text-danger">{error}</p>}
+        </div>
+      );
+    }
+
+    case "ranking": {
+      const items = (element.properties.items as string[]) || [];
+      return (
+        <RankingField
+          items={items}
+          value={(value as string[]) || []}
+          onChange={onChange}
+          error={error}
+        />
+      );
+    }
+
+    case "constant_sum": {
+      const items = (element.properties.items as string[]) || [];
+      const total = (element.properties.total as number) || 100;
+      const unit = (element.properties.unit as string) || "pontos";
+      return (
+        <ConstantSumField
+          items={items}
+          total={total}
+          unit={unit}
+          value={(value as Record<string, number>) || {}}
+          onChange={onChange}
+          error={error}
+        />
       );
     }
 

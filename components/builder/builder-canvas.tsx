@@ -16,7 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useBuilderStore } from "@/stores/builder-store";
 import { SortableFieldCard } from "./sortable-field-card";
-import { Plus, MousePointerClick } from "lucide-react";
+import { Plus, MousePointerClick, GitBranch } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -276,6 +276,8 @@ export function BuilderCanvas() {
                       questionNumber = count + idx + 1;
                     }
 
+                    const hasConditions = element.conditions && element.conditions.length > 0;
+
                     return (
                       <SortableFieldCard
                         key={element.id}
@@ -283,6 +285,7 @@ export function BuilderCanvas() {
                         isSelected={selectedElementId === element.id}
                         onSelect={() => selectElement(element.id)}
                         questionNumber={questionNumber}
+                        hasConditions={hasConditions}
                       />
                     );
                   })}

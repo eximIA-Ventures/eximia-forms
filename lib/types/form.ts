@@ -24,7 +24,13 @@ export type FieldType =
   | "nps"
   | "heading"
   | "paragraph"
-  | "divider";
+  | "divider"
+  | "attention_check"
+  | "matrix"
+  | "semantic_differential"
+  | "word_association"
+  | "ranking"
+  | "constant_sum";
 
 export interface FormValidation {
   type: "required" | "min" | "max" | "minLength" | "maxLength" | "pattern" | "email" | "url";
@@ -47,6 +53,7 @@ export interface FormElement {
   required: boolean;
   validation: FormValidation[];
   conditions: FormCondition[];
+  pinned?: boolean;
   properties: Record<string, unknown>;
 }
 
@@ -56,6 +63,8 @@ export interface FormPage {
   description?: string;
   elements: FormElement[];
   conditions: FormCondition[];
+  /** Shuffle element order in public renderer */
+  shuffleElements?: boolean;
 }
 
 export interface FormTheme {
@@ -92,7 +101,7 @@ export interface FormSchema {
 // DATABASE TYPES
 // ======================================================================
 
-export type FormStatus = "draft" | "published" | "closed" | "archived";
+export type FormStatus = "draft" | "published" | "closed" | "archived" | "pilot";
 
 export interface FormWorkspace {
   id: string;
@@ -117,6 +126,11 @@ export interface Form {
   updated_at: string;
 }
 
+export interface AttentionCheckResult {
+  fieldId: string;
+  passed: boolean;
+}
+
 export interface FormSubmission {
   id: string;
   form_id: string;
@@ -127,6 +141,9 @@ export interface FormSubmission {
     started_at?: string;
     completed_at?: string;
     duration_ms?: number;
+    attention_checks?: AttentionCheckResult[];
+    field_completion?: Record<string, boolean>;
+    is_pilot?: boolean;
   };
   is_complete: boolean;
   page_history: string[];
@@ -162,7 +179,7 @@ export interface FieldMeta {
   type: FieldType;
   label: string;
   icon: string;
-  category: "input" | "choice" | "date" | "media" | "rating" | "layout";
+  category: "input" | "choice" | "date" | "media" | "rating" | "layout" | "advanced";
   defaultProperties?: Record<string, unknown>;
 }
 
@@ -200,6 +217,14 @@ export const FIELD_TYPES: FieldMeta[] = [
   { type: "heading", label: "Título", icon: "Heading", category: "layout" },
   { type: "paragraph", label: "Parágrafo", icon: "Text", category: "layout" },
   { type: "divider", label: "Divisor", icon: "Minus", category: "layout" },
+
+  // Advanced
+  { type: "attention_check", label: "Verificação de atenção", icon: "ShieldCheck", category: "rating", defaultProperties: { displayType: "radio", correctAnswer: "", options: [{ label: "Opção 1", value: "option_1" }] } },
+  { type: "matrix", label: "Matriz / Grid", icon: "Grid3X3", category: "advanced", defaultProperties: { rows: ["Item 1", "Item 2", "Item 3"], columns: ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"] } },
+  { type: "semantic_differential", label: "Diferencial Semântico", icon: "ArrowLeftRight", category: "advanced", defaultProperties: { leftLabel: "Nada acessível", rightLabel: "Muito acessível", points: 5 } },
+  { type: "word_association", label: "Associação de palavras", icon: "MessageCircle", category: "input", defaultProperties: { terms: ["Termo 1", "Termo 2", "Termo 3"], termPlaceholder: "Primeira palavra que vem à mente..." } },
+  { type: "ranking", label: "Ranking", icon: "ListOrdered", category: "choice", defaultProperties: { items: ["Item 1", "Item 2", "Item 3"] } },
+  { type: "constant_sum", label: "Soma Constante", icon: "PieChart", category: "advanced", defaultProperties: { items: ["Item 1", "Item 2", "Item 3"], total: 100, unit: "pontos" } },
 ];
 
 export const FIELD_CATEGORIES = [
@@ -208,6 +233,7 @@ export const FIELD_CATEGORIES = [
   { id: "date" as const, label: "Data/Hora" },
   { id: "media" as const, label: "Mídia" },
   { id: "rating" as const, label: "Avaliação" },
+  { id: "advanced" as const, label: "Avançado" },
   { id: "layout" as const, label: "Layout" },
 ];
 

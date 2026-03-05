@@ -15,7 +15,6 @@ import {
   TrendingUp,
   BarChart3,
   Pencil,
-  ExternalLink,
   FileText,
   FileDown,
   FileSpreadsheet,
@@ -25,8 +24,11 @@ import {
   Copy,
   CheckCircle2,
   Trash2,
+  FlaskConical,
+  ShieldAlert,
 } from "lucide-react";
 import type { FormSubmission, Form, FormElement } from "@/lib/types";
+import { FieldResponseRates } from "@/components/analytics/field-response-rates";
 import { cn } from "@/lib/utils";
 
 type TabKey = "overview" | "responses";
@@ -310,11 +312,17 @@ export default function ResponsesPage({
               {form?.status && (
                 <Badge
                   variant={
-                    form.status === "published" ? "success" : "default"
+                    form.status === "published"
+                      ? "success"
+                      : form.status === "pilot"
+                      ? "warning"
+                      : "default"
                   }
                 >
                   {form.status === "published"
                     ? "Publicado"
+                    : form.status === "pilot"
+                    ? "Piloto"
                     : form.status === "draft"
                     ? "Rascunho"
                     : form.status}
@@ -349,6 +357,19 @@ export default function ResponsesPage({
           />
         </div>
       </div>
+
+      {/* Pilot Mode Banner */}
+      {form?.status === "pilot" && (
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-warning/30 bg-warning/5 px-4 py-3">
+          <FlaskConical size={18} className="shrink-0 text-warning" />
+          <div>
+            <p className="text-sm font-semibold text-warning">Modo Piloto</p>
+            <p className="text-xs text-muted">
+              Submissões neste modo são marcadas como piloto e podem ser filtradas separadamente.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -488,6 +509,11 @@ function OverviewTab({
           submissions={submissions}
         />
       ))}
+
+      {/* Field Response Rates */}
+      <div className="lg:col-span-2">
+        <FieldResponseRates fields={fields} submissions={submissions} />
+      </div>
 
       {/* Timeline */}
       <div className="lg:col-span-2">
@@ -935,9 +961,25 @@ function ResponsesTab({
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted truncate max-w-xs">
-                    {firstValues
-                      .map(([, v]) => String(v))
-                      .join(" · ")}
+                    <div className="flex items-center gap-2">
+                      <span className="truncate">
+                        {firstValues
+                          .map(([, v]) => String(v))
+                          .join(" · ")}
+                      </span>
+                      {sub.metadata?.attention_checks?.some((ac: { passed: boolean }) => !ac.passed) && (
+                        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-danger/10 px-1.5 py-0.5 text-[10px] font-medium text-danger">
+                          <ShieldAlert size={10} />
+                          Atenção
+                        </span>
+                      )}
+                      {sub.metadata?.is_pilot && (
+                        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-warning/10 px-1.5 py-0.5 text-[10px] font-medium text-warning">
+                          <FlaskConical size={10} />
+                          Piloto
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-right">
                     {isExpanded ? (
@@ -979,12 +1021,29 @@ function ResponsesTab({
                         })}
                       </div>
                       <div className="mt-3 flex items-center justify-between">
-                        <div className="flex gap-4 text-xs text-muted">
+                        <div className="flex flex-wrap gap-4 text-xs text-muted">
                           {sub.metadata?.duration_ms && (
                             <span className="flex items-center gap-1">
                               <Clock size={10} />
                               Tempo:{" "}
                               {Math.round(sub.metadata.duration_ms / 1000)}s
+                            </span>
+                          )}
+                          {sub.metadata?.attention_checks && (
+                            <span className={cn(
+                              "flex items-center gap-1",
+                              sub.metadata.attention_checks.every((ac: { passed: boolean }) => ac.passed)
+                                ? "text-success"
+                                : "text-danger"
+                            )}>
+                              <ShieldAlert size={10} />
+                              Atenção: {sub.metadata.attention_checks.filter((ac: { passed: boolean }) => ac.passed).length}/{sub.metadata.attention_checks.length} corretas
+                            </span>
+                          )}
+                          {sub.metadata?.is_pilot && (
+                            <span className="flex items-center gap-1 text-warning">
+                              <FlaskConical size={10} />
+                              Submissão piloto
                             </span>
                           )}
                         </div>

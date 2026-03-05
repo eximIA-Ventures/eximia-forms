@@ -2,7 +2,8 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { FormSchema } from "@/lib/types";
+import type { FormSchema, FormElement, FormPage } from "@/lib/types";
+import { evaluateConditions } from "@/lib/conditions/evaluate";
 
 interface FormRendererState {
   // Form data
@@ -27,6 +28,11 @@ interface FormRendererState {
   setSubmitting: (submitting: boolean) => void;
   setSubmitted: () => void;
   reset: () => void;
+
+  // Condition helpers
+  getVisibleElements: (page: FormPage) => FormElement[];
+  getVisiblePages: () => FormPage[];
+  getVisiblePageIndices: () => number[];
 }
 
 export const useFormStore = create<FormRendererState>()(
@@ -86,19 +92,30 @@ export const useFormStore = create<FormRendererState>()(
       clearAllErrors: () => set({ errors: {} }),
 
       nextPage: () => {
-        const { schema, currentPageIndex } = get();
+        const { schema, currentPageIndex, answers } = get();
         if (!schema) return false;
-        if (currentPageIndex < schema.pages.length - 1) {
-          set({ currentPageIndex: currentPageIndex + 1 });
+
+        // Find next visible page
+        const visibleIndices = get().getVisiblePageIndices();
+        const currentVisibleIdx = visibleIndices.indexOf(currentPageIndex);
+        if (currentVisibleIdx < visibleIndices.length - 1) {
+          set({ currentPageIndex: visibleIndices[currentVisibleIdx + 1] });
           return true;
         }
         return false;
       },
 
-      prevPage: () =>
-        set((state) => ({
-          currentPageIndex: Math.max(0, state.currentPageIndex - 1),
-        })),
+      prevPage: () => {
+        const { schema, currentPageIndex } = get();
+        if (!schema) return;
+
+        // Find previous visible page
+        const visibleIndices = get().getVisiblePageIndices();
+        const currentVisibleIdx = visibleIndices.indexOf(currentPageIndex);
+        if (currentVisibleIdx > 0) {
+          set({ currentPageIndex: visibleIndices[currentVisibleIdx - 1] });
+        }
+      },
 
       goToPage: (index) =>
         set((state) => {
@@ -123,6 +140,33 @@ export const useFormStore = create<FormRendererState>()(
           isSubmitted: false,
           startedAt: null,
         }),
+
+      // Get visible elements for a page (filter by conditions)
+      getVisibleElements: (page: FormPage) => {
+        const { answers } = get();
+        return page.elements.filter((el) =>
+          evaluateConditions(el.conditions, answers)
+        );
+      },
+
+      // Get all visible pages (filter by page conditions)
+      getVisiblePages: () => {
+        const { schema, answers } = get();
+        if (!schema) return [];
+        return schema.pages.filter((page) =>
+          evaluateConditions(page.conditions, answers)
+        );
+      },
+
+      // Get indices of visible pages in the original schema
+      getVisiblePageIndices: () => {
+        const { schema, answers } = get();
+        if (!schema) return [];
+        return schema.pages
+          .map((page, index) => ({ page, index }))
+          .filter(({ page }) => evaluateConditions(page.conditions, answers))
+          .map(({ index }) => index);
+      },
     }),
     {
       name: "eximia-forms-progress",

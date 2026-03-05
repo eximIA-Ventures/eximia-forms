@@ -40,6 +40,7 @@ interface BuilderState {
   selectElement: (elementId: string | null) => void;
   reorderElements: (pageIndex: number, fromIndex: number, toIndex: number) => void;
   moveElementToPage: (elementId: string, targetPageIndex: number, atIndex?: number) => void;
+  togglePinElement: (elementId: string) => void;
 
   // Actions — State
   markClean: () => void;
@@ -264,6 +265,20 @@ export const useBuilderStore = create<BuilderState>()(
           }
           pages[targetPageIndex] = { ...pages[targetPageIndex], elements: targetElements };
 
+          return {
+            schema: { ...state.schema, pages },
+            isDirty: true,
+          };
+        }),
+
+      togglePinElement: (elementId) =>
+        set((state) => {
+          const pages = state.schema.pages.map((page) => ({
+            ...page,
+            elements: page.elements.map((el) =>
+              el.id === elementId ? { ...el, pinned: !el.pinned } : el
+            ),
+          }));
           return {
             schema: { ...state.schema, pages },
             isDirty: true,
