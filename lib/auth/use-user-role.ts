@@ -20,13 +20,18 @@ export function useUserRole() {
         return;
       }
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("user_profiles")
         .select("role")
         .eq("id", user.id)
         .single();
 
-      setRole((data?.role as UserRole) || "user");
+      if (error) {
+        console.error("[useUserRole] Error fetching profile:", error.message);
+      }
+
+      const fetchedRole = (data?.role as UserRole) || "user";
+      setRole(fetchedRole);
       setLoading(false);
     }
 
