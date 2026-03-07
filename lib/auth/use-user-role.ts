@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/types";
 
 export function useUserRole() {
@@ -10,28 +9,17 @@ export function useUserRole() {
 
   useEffect(() => {
     async function fetchRole() {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        setLoading(false);
-        return;
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const { role: fetchedRole } = await res.json();
+          setRole(fetchedRole || "user");
+        } else {
+          setRole("user");
+        }
+      } catch {
+        setRole("user");
       }
-
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (error) {
-        console.error("[useUserRole] Error fetching profile:", error.message);
-      }
-
-      const fetchedRole = (data?.role as UserRole) || "user";
-      setRole(fetchedRole);
       setLoading(false);
     }
 

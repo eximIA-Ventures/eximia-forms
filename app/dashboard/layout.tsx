@@ -33,13 +33,13 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/admin/forms", label: "Formulários", icon: FileText },
-  { href: "/admin/users", label: "Usuários", icon: Users, superAdminOnly: true },
-  { href: "/admin/workspaces", label: "Workspaces", icon: Layers, superAdminOnly: true },
-  { href: "/admin/global", label: "Visão Global", icon: Globe, superAdminOnly: true },
-  { href: "/admin/upgrade", label: "Planos", icon: Zap },
-  { href: "/admin/settings", label: "Configurações", icon: Settings },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/forms", label: "Formulários", icon: FileText },
+  { href: "/dashboard/users", label: "Usuários", icon: Users, superAdminOnly: true },
+  { href: "/dashboard/workspaces", label: "Workspaces", icon: Layers, superAdminOnly: true },
+  { href: "/dashboard/global", label: "Visão Global", icon: Globe, superAdminOnly: true },
+  { href: "/dashboard/upgrade", label: "Planos", icon: Zap },
+  { href: "/dashboard/settings", label: "Configurações", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -68,7 +68,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/admin/login");
+    router.push("/dashboard/login");
   }
 
   // Skip layout for login, register, and builder pages (they have their own layout)

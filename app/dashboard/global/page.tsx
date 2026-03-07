@@ -59,7 +59,7 @@ export default function GlobalDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!roleLoading && !isSuperAdmin) router.push("/admin");
+    if (!roleLoading && !isSuperAdmin) router.push("/dashboard");
   }, [roleLoading, isSuperAdmin, router]);
 
   useEffect(() => {

@@ -48,7 +48,7 @@ export default function UserDetailPage() {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
-    if (!roleLoading && !isSuperAdmin) router.push("/admin");
+    if (!roleLoading && !isSuperAdmin) router.push("/dashboard");
   }, [roleLoading, isSuperAdmin, router]);
 
   useEffect(() => {
@@ -103,7 +103,7 @@ export default function UserDetailPage() {
     if (!confirm("Tem certeza que deseja excluir este usuário? Esta ação é irreversível.")) return;
     setActionLoading(true);
     await fetch(`/api/v1/admin/users/${userId}`, { method: "DELETE" });
-    router.push("/admin/users");
+    router.push("/dashboard/users");
   }
 
   if (roleLoading || loading) {
@@ -125,7 +125,7 @@ export default function UserDetailPage() {
   return (
     <div className="p-6 md:p-8 max-w-4xl mx-auto">
       <button
-        onClick={() => router.push("/admin/users")}
+        onClick={() => router.push("/dashboard/users")}
         className="mb-6 inline-flex items-center gap-2 text-sm text-muted hover:text-primary transition-colors"
       >
         <ArrowLeft size={16} />

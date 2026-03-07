@@ -27,7 +27,7 @@ export default function OnboardingPage() {
         // Non-blocking — workspace will be auto-created anyway
       }
     }
-    router.push("/admin");
+    router.push("/dashboard");
   }
 
   return (

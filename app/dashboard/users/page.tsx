@@ -38,7 +38,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     if (!roleLoading && !isSuperAdmin) {
-      router.push("/admin");
+      router.push("/dashboard");
     }
   }, [roleLoading, isSuperAdmin, router]);
 

@@ -38,14 +38,14 @@ export async function middleware(request: NextRequest) {
 
   // Protect /admin routes (except /admin/login and /admin/register)
   if (
-    pathname.startsWith("/admin") &&
-    pathname !== "/admin/login" &&
-    pathname !== "/admin/register" &&
-    pathname !== "/admin/onboarding"
+    pathname.startsWith("/dashboard") &&
+    pathname !== "/dashboard/login" &&
+    pathname !== "/dashboard/register" &&
+    pathname !== "/dashboard/onboarding"
   ) {
     if (!user) {
       const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = "/admin/login";
+      loginUrl.pathname = "/dashboard/login";
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }

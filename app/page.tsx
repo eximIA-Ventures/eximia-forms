@@ -300,13 +300,13 @@ export default function LandingPage() {
           </Link>
           <div className="flex items-center gap-4">
             <Link
-              href="/admin/login"
+              href="/dashboard/login"
               className="hidden text-sm text-muted transition-colors hover:text-primary sm:block"
             >
               Entrar
             </Link>
             <Link
-              href="/admin/register"
+              href="/dashboard/register"
               className="group flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-black transition-all hover:bg-accent-hover hover:shadow-glow-accent"
             >
               Começar grátis
@@ -358,7 +358,7 @@ export default function LandingPage() {
           {/* CTAs */}
           <div className="mb-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
-              href="/admin/register"
+              href="/dashboard/register"
               className="group inline-flex items-center gap-2.5 rounded-xl bg-accent px-7 py-3.5 text-sm font-semibold text-black shadow-glow-accent transition-all hover:bg-accent-hover hover:shadow-lg"
             >
               Criar meu primeiro formulário
@@ -652,7 +652,7 @@ export default function LandingPage() {
                 {!plan.anchor && <div className="mb-4" />}
 
                 <Link
-                  href="/admin/register"
+                  href="/dashboard/register"
                   className={`mb-6 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
                     plan.popular
                       ? "bg-accent text-black hover:bg-accent-hover shadow-glow-accent"
@@ -816,7 +816,7 @@ export default function LandingPage() {
             período de teste — o plano Starter é gratuito de verdade.
           </p>
           <Link
-            href="/admin/register"
+            href="/dashboard/register"
             className="group inline-flex items-center gap-2.5 rounded-xl bg-accent px-8 py-3.5 text-sm font-semibold text-black shadow-glow-accent transition-all hover:bg-accent-hover hover:shadow-lg"
           >
             Começar agora — é grátis
@@ -849,10 +849,10 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="flex items-center gap-6 text-xs text-muted">
-              <Link href="/admin/login" className="hover:text-primary transition-colors">
+              <Link href="/dashboard/login" className="hover:text-primary transition-colors">
                 Entrar
               </Link>
-              <Link href="/admin/register" className="hover:text-primary transition-colors">
+              <Link href="/dashboard/register" className="hover:text-primary transition-colors">
                 Criar conta
               </Link>
               <Link href="#pricing" className="hover:text-primary transition-colors">

@@ -15,7 +15,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/admin";
+  const redirect = searchParams.get("redirect") || "/dashboard";
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -85,7 +85,7 @@ function LoginForm() {
       <p className="text-center text-sm text-muted">
         Não tem conta?{" "}
         <Link
-          href="/admin/register"
+          href="/dashboard/register"
           className="text-accent hover:text-accent/80 transition-colors"
         >
           Criar conta

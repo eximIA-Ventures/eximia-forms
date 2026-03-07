@@ -294,7 +294,7 @@ export default function NewFormPage() {
           <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
-              onClick={() => router.push("/admin/forms")}
+              onClick={() => router.push("/dashboard/forms")}
             >
               Cancelar
             </Button>
@@ -349,7 +349,7 @@ export default function NewFormPage() {
           )}
 
           <div className="flex gap-3 pt-2">
-            <Button variant="outline" onClick={() => router.push("/admin/forms")}>
+            <Button variant="outline" onClick={() => router.push("/dashboard/forms")}>
               Cancelar
             </Button>
           </div>
@@ -385,7 +385,7 @@ export default function NewFormPage() {
           <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
-              onClick={() => router.push("/admin/forms")}
+              onClick={() => router.push("/dashboard/forms")}
             >
               Cancelar
             </Button>
@@ -486,7 +486,7 @@ export default function NewFormPage() {
               <div className="flex gap-3 pt-2">
                 <Button
                   variant="outline"
-                  onClick={() => router.push("/admin/forms")}
+                  onClick={() => router.push("/dashboard/forms")}
                 >
                   Cancelar
                 </Button>

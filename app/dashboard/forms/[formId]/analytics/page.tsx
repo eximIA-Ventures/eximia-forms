@@ -70,7 +70,7 @@ export default function AnalyticsPage({ params }: { params: Promise<{ formId: st
   return (
     <div className="p-6 md:p-8">
       <div className="mb-6 flex items-center gap-3">
-        <Link href="/admin/forms" className="text-muted hover:text-primary">
+        <Link href="/dashboard/forms" className="text-muted hover:text-primary">
           <ArrowLeft size={20} />
         </Link>
         <div>

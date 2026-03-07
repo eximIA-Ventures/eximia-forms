@@ -17,7 +17,7 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/admin/onboarding";
+  const redirect = searchParams.get("redirect") || "/dashboard/onboarding";
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -130,7 +130,7 @@ function RegisterForm() {
       <p className="text-center text-sm text-muted">
         Já tem uma conta?{" "}
         <Link
-          href="/admin/login"
+          href="/dashboard/login"
           className="text-accent hover:text-accent/80 transition-colors"
         >
           Entrar

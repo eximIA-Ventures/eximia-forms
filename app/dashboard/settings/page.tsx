@@ -158,7 +158,7 @@ export default function SettingsPage() {
               </Button>
             ) : (
               <Link
-                href="/admin/upgrade"
+                href="/dashboard/upgrade"
                 className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-elevated transition-colors"
               >
                 Fazer upgrade

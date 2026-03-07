@@ -120,7 +120,7 @@ export function BuilderHeader({ formId, onSave, isSaving }: BuilderHeaderProps) 
       {/* Left section */}
       <div className="flex items-center gap-3">
         <button
-          onClick={() => guardedNavigate("/admin/forms")}
+          onClick={() => guardedNavigate("/dashboard/forms")}
           className="flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-elevated hover:text-primary transition-colors"
           title="Voltar"
         >

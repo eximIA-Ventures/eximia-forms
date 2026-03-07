@@ -160,7 +160,7 @@ export default function AdminDashboard() {
             Visão geral dos seus formulários
           </p>
         </div>
-        <Link href="/admin/forms/new" className="block sm:inline-block">
+        <Link href="/dashboard/forms/new" className="block sm:inline-block">
           <Button className="gap-1.5 w-full sm:w-auto sm:size-sm">
             <Plus size={18} />
             Novo formulário
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg md:text-xl font-semibold">Formulários recentes</h2>
               <Link
-                href="/admin/forms"
+                href="/dashboard/forms"
                 className="flex items-center gap-1 text-xs font-medium text-accent hover:text-accent-hover transition-colors"
               >
                 Ver todos
@@ -227,7 +227,7 @@ export default function AdminDashboard() {
                 <p className="mt-1 text-xs text-muted">
                   Crie seu primeiro formulário para começar
                 </p>
-                <Link href="/admin/forms/new">
+                <Link href="/dashboard/forms/new">
                   <Button size="sm" variant="outline" className="mt-4 gap-1.5">
                     <Plus size={14} />
                     Criar formulário
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
             <h2 className="mb-4 text-lg md:text-xl font-semibold">Ações rápidas</h2>
             <div className="grid gap-3 sm:grid-cols-3">
               <Link
-                href="/admin/forms/new"
+                href="/dashboard/forms/new"
                 className="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent/50 hover:shadow-sm"
               >
                 <div className="rounded-lg bg-accent/10 p-2.5">
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
               </Link>
 
               <Link
-                href="/admin/forms"
+                href="/dashboard/forms"
                 className="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent/50 hover:shadow-sm"
               >
                 <div className="rounded-lg bg-accent-alt/10 p-2.5">
@@ -340,7 +340,7 @@ export default function AdminDashboard() {
               </Link>
 
               <Link
-                href="/admin/settings"
+                href="/dashboard/settings"
                 className="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent/50 hover:shadow-sm"
               >
                 <div className="rounded-lg bg-info/10 p-2.5">

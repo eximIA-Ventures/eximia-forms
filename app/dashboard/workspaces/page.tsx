@@ -44,7 +44,7 @@ export default function WorkspacesPage() {
   const [editName, setEditName] = useState("");
 
   useEffect(() => {
-    if (!roleLoading && !isSuperAdmin) router.push("/admin");
+    if (!roleLoading && !isSuperAdmin) router.push("/dashboard");
   }, [roleLoading, isSuperAdmin, router]);
 
   useEffect(() => {

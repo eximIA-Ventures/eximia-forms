@@ -296,7 +296,7 @@ export default function ResponsesPage({
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Link
-            href="/admin/forms"
+            href="/dashboard/forms"
             className="rounded-lg p-2 text-muted hover:bg-elevated hover:text-primary transition-colors"
           >
             <ArrowLeft size={18} />
