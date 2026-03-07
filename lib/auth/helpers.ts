@@ -10,7 +10,9 @@ export async function getCurrentUser() {
 
   if (!user) return null;
 
-  const { data: profile } = await supabase
+  // Use admin client to bypass RLS for profile reads
+  const admin = createAdminClient();
+  const { data: profile } = await admin
     .from("user_profiles")
     .select("*")
     .eq("id", user.id)

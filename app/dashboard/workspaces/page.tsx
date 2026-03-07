@@ -198,7 +198,7 @@ export default function WorkspacesPage() {
                     <div>
                       <span
                         className="text-sm hover:text-accent cursor-pointer transition-colors"
-                        onClick={() => router.push(`/admin/users/${ws.owner_id}`)}
+                        onClick={() => router.push(`/dashboard/users/${ws.owner_id}`)}
                       >
                         {ws.user_profiles?.full_name || "Sem nome"}
                       </span>
