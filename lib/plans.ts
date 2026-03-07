@@ -305,7 +305,7 @@ export async function canReceiveSubmission(formId: string): Promise<{ allowed: b
   if ((count || 0) >= limits.maxSubmissionsPerMonth) {
     return {
       allowed: false,
-      reason: `Limite de ${limits.maxSubmissionsPerMonth.toLocaleString("pt-BR")} respostas/mês atingido no plano ${plan}.`,
+      reason: `Limite de ${(limits.maxSubmissionsPerMonth ?? 0).toLocaleString("pt-BR")} respostas/mês atingido no plano ${plan}.`,
     };
   }
 

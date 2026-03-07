@@ -165,7 +165,7 @@ function UpgradeContent() {
             </div>
             <div>
               <div className="flex justify-between text-xs text-muted mb-1">
-                <span>Respostas: {usage.submissionsThisMonth} / {usage.limits.maxSubmissionsPerMonth === Infinity ? "∞" : usage.limits.maxSubmissionsPerMonth.toLocaleString("pt-BR")}</span>
+                <span>Respostas: {usage.submissionsThisMonth} / {usage.limits.maxSubmissionsPerMonth === Infinity ? "∞" : (usage.limits.maxSubmissionsPerMonth ?? 0).toLocaleString("pt-BR")}</span>
                 <span>{usage.submissionsPercent}%</span>
               </div>
               <div className="h-2 rounded-full bg-elevated overflow-hidden">

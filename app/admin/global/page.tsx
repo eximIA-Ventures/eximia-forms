@@ -89,8 +89,8 @@ export default function GlobalDashboardPage() {
   const primaryCards = [
     {
       label: "MRR (projeção)",
-      value: `R$ ${stats.mrr_brl.toLocaleString("pt-BR")}`,
-      subValue: `US$ ${stats.mrr_usd.toLocaleString("en-US")}`,
+      value: `R$ ${(stats.mrr_brl ?? 0).toLocaleString("pt-BR")}`,
+      subValue: `US$ ${(stats.mrr_usd ?? 0).toLocaleString("en-US")}`,
       icon: DollarSign,
       color: "text-green-400",
       bg: "bg-green-500/10",
@@ -106,28 +106,28 @@ export default function GlobalDashboardPage() {
     {
       label: "Novos este mês",
       value: stats.new_users_this_month,
-      subValue: stats.user_growth_percent > 0
+      subValue: (stats.user_growth_percent ?? 0) > 0
         ? `+${stats.user_growth_percent}%`
-        : stats.user_growth_percent < 0
+        : (stats.user_growth_percent ?? 0) < 0
         ? `${stats.user_growth_percent}%`
         : "—",
       icon: UserPlus,
       color: "text-accent",
       bg: "bg-accent/10",
-      trend: stats.user_growth_percent,
+      trend: stats.user_growth_percent ?? 0,
     },
     {
       label: "Respostas este mês",
-      value: stats.submissions_this_month.toLocaleString("pt-BR"),
-      subValue: stats.submissions_growth_percent > 0
+      value: (stats.submissions_this_month ?? 0).toLocaleString("pt-BR"),
+      subValue: (stats.submissions_growth_percent ?? 0) > 0
         ? `+${stats.submissions_growth_percent}%`
-        : stats.submissions_growth_percent < 0
+        : (stats.submissions_growth_percent ?? 0) < 0
         ? `${stats.submissions_growth_percent}%`
         : "—",
       icon: Activity,
       color: "text-purple-400",
       bg: "bg-purple-500/10",
-      trend: stats.submissions_growth_percent,
+      trend: stats.submissions_growth_percent ?? 0,
     },
   ];
 
