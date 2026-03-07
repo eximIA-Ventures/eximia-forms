@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { FormSchema, AttentionCheckResult } from "@/lib/types";
+import { canReceiveSubmission } from "@/lib/plans";
 
 export async function GET(
   request: NextRequest,
@@ -46,6 +47,15 @@ export async function POST(
 
   if (!form) {
     return NextResponse.json({ error: "Form not found or not published" }, { status: 404 });
+  }
+
+  // Check submission limits
+  const limitCheck = await canReceiveSubmission(formId);
+  if (!limitCheck.allowed) {
+    return NextResponse.json(
+      { error: limitCheck.reason, code: "PLAN_LIMIT" },
+      { status: 403 }
+    );
   }
 
   const body = await request.json();

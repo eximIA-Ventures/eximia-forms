@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
 import { createDefaultFormSchema } from "@/lib/types";
+import { canCreateForm } from "@/lib/plans";
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -28,6 +29,15 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Check plan limits
+  const limitCheck = await canCreateForm(user.id);
+  if (!limitCheck.allowed) {
+    return NextResponse.json(
+      { error: limitCheck.reason, code: "PLAN_LIMIT" },
+      { status: 403 }
+    );
+  }
 
   const body = await request.json();
 

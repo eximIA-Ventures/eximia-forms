@@ -4,11 +4,17 @@ import { openai } from "@ai-sdk/openai";
 import { aiFormGenerationSchema } from "@/lib/validation/form-schema";
 import type { FormSchema } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
+import { checkAiAccess, incrementAiUsage } from "@/lib/plans-check";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const aiCheck = await checkAiAccess(user.id);
+  if (!aiCheck.allowed) {
+    return NextResponse.json({ error: aiCheck.reason, code: "PLAN_LIMIT" }, { status: 403 });
+  }
 
   const { instruction, currentSchema } = await request.json();
   if (!instruction) {
@@ -77,6 +83,7 @@ REGRAS:
       theme: currentSchema.theme,
     };
 
+    await incrementAiUsage(user.id);
     return NextResponse.json({ schema });
   } catch (error) {
     console.error("AI edit error:", error);

@@ -12,15 +12,33 @@ import {
   Menu,
   X,
   LogOut,
+  Users,
+  Globe,
+  Layers,
+  Shield,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import { ToastProvider } from "@/components/ui/toast";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
+import { useUserRole } from "@/lib/auth/use-user-role";
 
-const NAV_ITEMS = [
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number }>;
+  exact?: boolean;
+  superAdminOnly?: boolean;
+}
+
+const NAV_ITEMS: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/forms", label: "Formulários", icon: FileText },
+  { href: "/admin/users", label: "Usuários", icon: Users, superAdminOnly: true },
+  { href: "/admin/workspaces", label: "Workspaces", icon: Layers, superAdminOnly: true },
+  { href: "/admin/global", label: "Visão Global", icon: Globe, superAdminOnly: true },
+  { href: "/admin/upgrade", label: "Planos", icon: Zap },
   { href: "/admin/settings", label: "Configurações", icon: Settings },
 ];
 
@@ -29,6 +47,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLight, setIsLight] = useState(false);
+  const { isSuperAdmin } = useUserRole();
+
+  const visibleNavItems = NAV_ITEMS.filter(
+    (item) => !item.superAdminOnly || isSuperAdmin
+  );
 
   useEffect(() => {
     const check = () =>
@@ -48,8 +71,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     router.push("/admin/login");
   }
 
-  // Skip layout for login and builder pages (they have their own layout)
-  if (pathname.includes("/edit") || pathname.includes("/login")) {
+  // Skip layout for login, register, and builder pages (they have their own layout)
+  if (pathname.includes("/edit") || pathname.includes("/login") || pathname.includes("/register") || pathname.includes("/onboarding")) {
     return <ToastProvider>{children}</ToastProvider>;
   }
 
@@ -58,20 +81,24 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen">
         {/* Sidebar — Desktop */}
         <aside className="hidden w-56 flex-col border-r border-border bg-surface md:flex">
-          <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
+          <div className="flex h-14 items-center gap-3 border-b border-border px-4">
             <Image
               src={isLight ? "/logo-horizontal-dark.svg" : "/logo-horizontal.svg"}
               alt="eximIA"
               width={110}
               height={24}
             />
-            <span className="text-sm font-medium tracking-wide text-muted">
-              forms
-            </span>
+            <div className="h-5 w-px bg-muted/30" />
+            <div className="flex flex-col items-start">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                Forms
+              </span>
+              <div className="mt-0.5 h-[2px] w-full rounded-full bg-accent" />
+            </div>
           </div>
 
           <nav className="flex-1 p-3 space-y-1">
-            {NAV_ITEMS.map((item) => {
+            {visibleNavItems.map((item) => {
               const isActive = item.exact
                 ? pathname === item.href
                 : pathname.startsWith(item.href);
@@ -93,6 +120,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             })}
           </nav>
 
+          {isSuperAdmin && (
+            <div className="mx-3 mb-2 flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-2 text-xs font-medium text-accent">
+              <Shield size={14} />
+              Super Admin
+            </div>
+          )}
+
           <div className="border-t border-border p-3 space-y-1">
             <ThemeToggle />
             <button
@@ -112,12 +146,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <Image
                 src={isLight ? "/logo-horizontal-dark.svg" : "/logo-horizontal.svg"}
                 alt="eximIA"
-                width={110}
-                height={24}
+                width={100}
+                height={22}
               />
-              <span className="rounded-md bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
-                Forms
-              </span>
+              <div className="h-4 w-px bg-muted/30" />
+              <div className="flex flex-col items-start">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                  Forms
+                </span>
+                <div className="mt-0.5 h-[1.5px] w-full rounded-full bg-accent" />
+              </div>
             </div>
             <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2">
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -135,7 +173,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex-1 space-y-1">
-                  {NAV_ITEMS.map((item) => {
+                  {visibleNavItems.map((item) => {
                     const isActive = item.exact
                       ? pathname === item.href
                       : pathname.startsWith(item.href);

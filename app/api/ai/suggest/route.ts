@@ -3,6 +3,7 @@ import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { checkAiAccess, incrementAiUsage } from "@/lib/plans-check";
 
 const suggestSchema = z.object({
   suggestions: z.array(
@@ -18,6 +19,11 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const aiCheck = await checkAiAccess(user.id);
+  if (!aiCheck.allowed) {
+    return NextResponse.json({ error: aiCheck.reason, code: "PLAN_LIMIT" }, { status: 403 });
+  }
 
   const { title, existingFields } = await request.json();
   if (!title) {
@@ -37,6 +43,7 @@ Tipos disponíveis: text, email, number, phone, url, textarea, select, multisele
 Sugira campos diferentes dos já existentes. Foque em campos que agregam valor ao formulário.`,
     });
 
+    await incrementAiUsage(user.id);
     return NextResponse.json(object);
   } catch (error) {
     console.error("AI suggestion error:", error);

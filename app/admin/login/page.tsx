@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button, Input } from "@/components/ui";
 import { ArrowRight, Lock } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -80,6 +81,16 @@ function LoginForm() {
           </>
         )}
       </Button>
+
+      <p className="text-center text-sm text-muted">
+        Não tem conta?{" "}
+        <Link
+          href="/admin/register"
+          className="text-accent hover:text-accent/80 transition-colors"
+        >
+          Criar conta
+        </Link>
+      </p>
     </form>
   );
 }
@@ -105,20 +116,20 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-sm">
         {/* Logo + branding */}
-        <div className="mb-10 flex flex-col items-center">
+        <div className="mb-10 flex items-center justify-center gap-3">
           <Image
             src="/logo-horizontal.svg"
             alt="eximIA"
-            width={220}
-            height={47}
+            width={180}
+            height={38}
             priority
           />
-          <div className="mt-4 flex items-center gap-2">
-            <div className="h-px w-8 bg-border" />
-            <span className="text-xs font-medium tracking-widest uppercase text-muted">
+          <div className="h-7 w-px bg-muted/30" />
+          <div className="flex flex-col items-start">
+            <span className="text-sm font-bold uppercase tracking-[0.2em] text-primary">
               Forms
             </span>
-            <div className="h-px w-8 bg-border" />
+            <div className="mt-0.5 h-[2px] w-full rounded-full bg-accent" />
           </div>
         </div>
 

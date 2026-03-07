@@ -3,6 +3,7 @@ import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { checkAiAccess, incrementAiUsage } from "@/lib/plans-check";
 
 const analysisSchema = z.object({
   summary: z.string().describe("Resumo geral das respostas em 2-3 frases"),
@@ -33,6 +34,11 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const aiCheck = await checkAiAccess(user.id);
+  if (!aiCheck.allowed) {
+    return NextResponse.json({ error: aiCheck.reason, code: "PLAN_LIMIT" }, { status: 403 });
+  }
 
   const { formId, type } = await request.json();
   if (!formId) {
@@ -108,6 +114,7 @@ Analise considerando:
       submission_count: submissions.length,
     });
 
+    await incrementAiUsage(user.id);
     return NextResponse.json(object);
   } catch (error) {
     console.error("AI analysis error:", error);

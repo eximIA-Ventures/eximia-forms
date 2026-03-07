@@ -47,6 +47,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Promote to super_admin (trigger creates profile with role='user')
+  await supabase
+    .from("user_profiles")
+    .update({ role: "super_admin" })
+    .eq("id", data.user.id);
+
   return NextResponse.json({
     message: "Admin user created successfully",
     user: { id: data.user.id, email: data.user.email },

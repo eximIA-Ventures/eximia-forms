@@ -4,6 +4,7 @@ import { openai } from "@ai-sdk/openai";
 import { aiFormGenerationSchema } from "@/lib/validation/form-schema";
 import type { FormSchema } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
+import { checkAiAccess, incrementAiUsage } from "@/lib/plans-check";
 
 // ── Category → prompt context mapping ────────────────────────────
 const CATEGORY_CONTEXT: Record<string, string> = {
@@ -45,6 +46,11 @@ export async function POST(request: NextRequest) {
   } = await supabase.auth.getUser();
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const aiCheck = await checkAiAccess(user.id);
+  if (!aiCheck.allowed) {
+    return NextResponse.json({ error: aiCheck.reason, code: "PLAN_LIMIT" }, { status: 403 });
+  }
 
   const { prompt, category, tone, length, multiplePages, audience, existingFields, mode } =
     await request.json();
@@ -195,7 +201,8 @@ export async function POST(request: NextRequest) {
       })),
     };
 
-    return NextResponse.json({ schema });
+    await incrementAiUsage(user.id);
+    return NextResponse.json({ schema, aiUsage: { used: aiCheck.used + 1, limit: aiCheck.limit, remaining: aiCheck.remaining - 1 } });
   } catch (error) {
     console.error("AI generation error:", error);
     const message = error instanceof Error ? error.message : String(error);

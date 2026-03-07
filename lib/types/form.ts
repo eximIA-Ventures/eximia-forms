@@ -98,6 +98,38 @@ export interface FormSchema {
 }
 
 // ======================================================================
+// USER / AUTH TYPES
+// ======================================================================
+
+export type UserRole = "user" | "super_admin";
+export type UserPlan = "free" | "pro" | "business" | "enterprise";
+
+export const USER_PLANS: { value: UserPlan; label: string; color: string }[] = [
+  { value: "free", label: "Free", color: "text-muted" },
+  { value: "pro", label: "Pro", color: "text-blue-400" },
+  { value: "business", label: "Business", color: "text-accent" },
+  { value: "enterprise", label: "Enterprise", color: "text-purple-400" },
+];
+
+export type SubscriptionStatus = "active" | "canceled" | "past_due" | "trialing" | "incomplete" | "inactive";
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: UserRole;
+  plan: UserPlan;
+  is_active: boolean;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  stripe_price_id: string | null;
+  subscription_status: SubscriptionStatus;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ======================================================================
 // DATABASE TYPES
 // ======================================================================
 
