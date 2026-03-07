@@ -115,21 +115,22 @@ export default function LoginPage() {
       />
 
       <div className="relative z-10 w-full max-w-sm">
-        {/* Logo + branding */}
-        <div className="mb-10 flex items-center justify-center gap-3">
+        {/* Logo + branding (Brandbook standard) */}
+        <div className="mb-10 flex flex-col items-center">
           <Image
             src="/logo-horizontal.svg"
             alt="eximIA"
-            width={180}
-            height={38}
+            width={200}
+            height={48}
+            className="h-12 w-auto"
             priority
           />
-          <div className="h-7 w-px bg-muted/30" />
-          <div className="flex flex-col items-start">
-            <span className="text-sm font-bold uppercase tracking-[0.2em] text-primary">
+          <div className="mt-4 flex items-center gap-2">
+            <div className="h-px w-8 bg-primary/10" />
+            <span className="text-xs font-medium tracking-[0.25em] uppercase text-muted">
               Forms
             </span>
-            <div className="mt-0.5 h-[2px] w-full rounded-full bg-accent" />
+            <div className="h-px w-8 bg-primary/10" />
           </div>
         </div>
 
